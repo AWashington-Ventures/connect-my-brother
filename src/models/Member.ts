@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
 export interface IMember extends Document {
-  // From dues card
   fullName: string
   lodgeName: string
   lodgeNumber: string
@@ -11,18 +10,18 @@ export interface IMember extends Document {
   cardVoidDate: string
   grandSecretary: string
   duesCardVerified: boolean
-  // Profile
   email: string
+  passwordHash?: string
   profilePicture?: string
   photos?: string[]
   website?: string
   bio?: string
-  skills: string[] // parsed keywords
-  skillsRaw: string // original entry
-  // Platform
+  skills: string[]
+  skillsRaw: string
   stripeCustomerId?: string
   stripeSubscriptionId?: string
   subscriptionStatus: 'active' | 'inactive' | 'pending'
+  memberNumber?: number
   memberSince: Date
   createdAt: Date
   updatedAt: Date
@@ -39,6 +38,7 @@ const MemberSchema = new Schema<IMember>({
   grandSecretary: { type: String, required: true },
   duesCardVerified: { type: Boolean, default: false },
   email: { type: String, required: true, unique: true },
+  passwordHash: { type: String },
   profilePicture: String,
   photos: [String],
   website: String,
@@ -48,10 +48,10 @@ const MemberSchema = new Schema<IMember>({
   stripeCustomerId: String,
   stripeSubscriptionId: String,
   subscriptionStatus: { type: String, enum: ['active', 'inactive', 'pending'], default: 'pending' },
+  memberNumber: Number,
   memberSince: { type: Date, default: Date.now },
 }, { timestamps: true })
 
-// Text index for keyword search
 MemberSchema.index({ skills: 'text', lodgeName: 'text', fullName: 'text', cityState: 'text' })
 
 export default mongoose.models.Member || mongoose.model<IMember>('Member', MemberSchema)

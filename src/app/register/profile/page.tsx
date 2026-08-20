@@ -49,7 +49,7 @@ export default function ProfilePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Profile save failed')
       sessionStorage.clear()
-      router.push('/register/success')
+      router.push('/register/set-password')
     } catch(err: any) {
       setError(err.message)
     } finally {

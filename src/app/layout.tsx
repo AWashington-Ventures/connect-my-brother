@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Providers from '@/components/Providers'
 
 export const metadata: Metadata = {
   title: 'Connect My Brother | Master Mason Network',
@@ -24,7 +25,7 @@ export default function RootLayout({
         {/* Masonic Square & Compass Watermark */}
         <div className="cmb-watermark" />
         <div className="relative z-10">
-          {children}
+          <Providers>{children}</Providers>
         </div>
       </body>
     </html>
