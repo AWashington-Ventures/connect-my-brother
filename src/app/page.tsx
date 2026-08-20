@@ -35,9 +35,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <div className="w-52 h-52 rounded-2xl overflow-hidden shadow-2xl shadow-brass-cmb/30">
-              <img src="/cmb-logo.jpg" alt="Connect My Brother" className="w-full h-full object-cover" />
-            </div>
+            <img src="/cmb-logo.jpg" alt="Connect My Brother" className="w-52 h-auto rounded-2xl shadow-2xl shadow-brass-cmb/30" />
           </div>
 
           {/* Title */}
