@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --purple-cmb: #5B2C8D;
+  --purple-dark: #3D1A6B;
+  --brass-cmb: #B08D57;
+  --brass-light: #D4AA70;
+}
+
+body {
+  background-color: var(--purple-dark);
+  color: #F5F0E8;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.cmb-watermark {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+}
+
+.cmb-watermark svg {
+  width: 80vmin;
+  height: 80vmin;
+  fill: #D4AA70;
+}
+
+.btn-brass {
+  background: linear-gradient(135deg, #B08D57, #D4AA70, #B08D57);
+  color: #1a0a2e;
+  font-weight: 700;
+  font-family: Georgia, serif;
+  border: 2px solid #D4AA70;
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+}
+
+.btn-brass:hover {
+  background: linear-gradient(135deg, #D4AA70, #F0C87A, #D4AA70);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(176, 141, 87, 0.4);
+}
+
+.btn-outline-brass {
+  border: 2px solid #B08D57;
+  color: #D4AA70;
+  background: transparent;
+  font-family: Georgia, serif;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-brass:hover {
+  background: rgba(176, 141, 87, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-cmb {
+  background: linear-gradient(135deg, rgba(91, 44, 141, 0.6), rgba(61, 26, 107, 0.8));
+  border: 1px solid rgba(176, 141, 87, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.card-cmb:hover {
+  border-color: rgba(212, 170, 112, 0.6);
+  box-shadow: 0 8px 32px rgba(176, 141, 87, 0.2);
+}
+
+.divider-brass {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #B08D57, #D4AA70, #B08D57, transparent);
+  margin: 2rem 0;
+}
+
+.text-brass { color: #D4AA70; }
+.text-brass-dim { color: #B08D57; }
+.bg-purple-cmb { background-color: #5B2C8D; }
+.bg-purple-dark { background-color: #3D1A6B; }
+
+.input-cmb {
+  background: rgba(61, 26, 107, 0.6);
+  border: 1px solid rgba(176, 141, 87, 0.4);
+  color: #F5F0E8;
+  font-family: Georgia, serif;
+}
+
+.input-cmb:focus {
+  outline: none;
+  border-color: #D4AA70;
+  box-shadow: 0 0 0 2px rgba(212, 170, 112, 0.2);
+}
+
+.input-cmb::placeholder { color: rgba(212, 170, 112, 0.4); }
