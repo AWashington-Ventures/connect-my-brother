@@ -1,5 +1,10 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
+export interface IWebsite {
+  label: string
+  url: string
+}
+
 export interface IMember extends Document {
   fullName: string
   lodgeName: string
@@ -14,6 +19,8 @@ export interface IMember extends Document {
   passwordHash?: string
   profilePicture?: string
   photos?: string[]
+  videos?: string[]
+  websites?: IWebsite[]
   website?: string
   bio?: string
   skills: string[]
@@ -26,6 +33,11 @@ export interface IMember extends Document {
   createdAt: Date
   updatedAt: Date
 }
+
+const WebsiteSchema = new Schema<IWebsite>({
+  label: { type: String, required: true },
+  url: { type: String, required: true },
+}, { _id: false })
 
 const MemberSchema = new Schema<IMember>({
   fullName: { type: String, required: true },
@@ -41,10 +53,12 @@ const MemberSchema = new Schema<IMember>({
   passwordHash: { type: String },
   profilePicture: String,
   photos: [String],
+  videos: [String],
+  websites: [WebsiteSchema],
   website: String,
   bio: String,
   skills: [{ type: String, index: true }],
-  skillsRaw: { type: String, default: '' },
+  skillsRaw: { type: String, default: ''  },
   stripeCustomerId: String,
   stripeSubscriptionId: String,
   subscriptionStatus: { type: String, enum: ['active', 'inactive', 'pending'], default: 'pending' },
