@@ -38,6 +38,12 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen pt-20 pb-16 px-4">
       <Navbar />
+      {/* Dashboard top nav bar */}
+      <div className="max-w-2xl mx-auto flex justify-end mb-4 pt-2">
+        <Link href="/search" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg border border-brass-cmb/40 bg-brass-cmb/10 text-brass font-serif font-semibold text-sm hover:border-brass-cmb/80 hover:bg-brass-cmb/20 transition-all">
+          🔍 Find a Brother
+        </Link>
+      </div>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">

@@ -72,9 +72,7 @@ export default function Home() {
             <Link href="/register/dues-card" className="btn-brass px-8 py-4 rounded-lg text-lg font-bold font-serif">
               Subscribe Today — $5/month
             </Link>
-            <Link href="/search" className="btn-outline-brass px-8 py-4 rounded-lg text-lg font-serif">
-              Find a Brother
-            </Link>
+
           </div>
         </div>
       </section>
