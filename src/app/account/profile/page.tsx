@@ -26,7 +26,7 @@ function UploadButton({ onUploaded, children, className }: { onUploaded: (url: s
 
   return (
     <>
-      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} capture="environment" />
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile}  />
       <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading}
         className={className || 'btn-brass px-3 py-1.5 rounded-lg text-xs font-semibold'}>
         {uploading ? '⏳ Uploading...' : children}
@@ -126,7 +126,7 @@ export default function EditProfilePage() {
                   : <div className="w-full h-full bg-purple-dark flex items-center justify-center text-4xl">👤</div>}
               </div>
               <div>
-                <UploadButton onUploaded={setProfilePicture}>📷 Upload from Phone</UploadButton>
+                <UploadButton onUploaded={setProfilePicture}>📁 Upload from Computer/Phone</UploadButton>
                 <p className="text-brass-dim/60 text-xs mt-2">Opens your camera or photo gallery</p>
                 {profilePicture && <p className="text-green-400 text-xs mt-1">✅ Photo uploaded</p>}
               </div>
