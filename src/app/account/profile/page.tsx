@@ -1,8 +1,39 @@
-"use client"
+'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
+import { uploadToCloudinary } from '@/lib/cloudinary'
+
+function UploadButton({ onUploaded, children, className }: { onUploaded: (url: string) => void, children: React.ReactNode, className?: string }) {
+  const [uploading, setUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const url = await uploadToCloudinary(file)
+      onUploaded(url)
+    } catch (err) {
+      alert('Upload failed. Please try again.')
+    } finally {
+      setUploading(false)
+      if (inputRef.current) inputRef.current.value = ''
+    }
+  }
+
+  return (
+    <>
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} capture="environment" />
+      <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading}
+        className={className || 'btn-brass px-3 py-1.5 rounded-lg text-xs font-semibold'}>
+        {uploading ? '⏳ Uploading...' : children}
+      </button>
+    </>
+  )
+}
 
 export default function EditProfilePage() {
   const { data: session, status } = useSession()
@@ -13,75 +44,42 @@ export default function EditProfilePage() {
   const [error, setError] = useState('')
   const [member, setMember] = useState<any>(null)
 
-  // Form state
   const [bio, setBio] = useState('')
   const [skillsRaw, setSkillsRaw] = useState('')
   const [profilePicture, setProfilePicture] = useState('')
-  const [photos, setPhotos] = useState<string[]>(['', '', '', '', '', ''])
-  const [videos, setVideos] = useState<string[]>(['', '', ''])
-  const [websites, setWebsites] = useState<{label: string, url: string}[]>([
-    { label: '', url: '' },
-    { label: '', url: '' },
-    { label: '', url: '' },
-    { label: '', url: '' },
-    { label: '', url: '' },
-  ])
+  const [photos, setPhotos] = useState<string[]>(Array(6).fill(''))
+  const [videos, setVideos] = useState<string[]>(Array(3).fill(''))
+  const [websites, setWebsites] = useState<{label: string, url: string}[]>(Array(5).fill(null).map(() => ({ label: '', url: '' })))
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
     if (status === 'authenticated') {
-      fetch('/api/member/me')
-        .then(r => r.json())
-        .then(data => {
-          if (data.member) {
-            const m = data.member
-            setMember(m)
-            setBio(m.bio || '')
-            setSkillsRaw(m.skillsRaw || '')
-            setProfilePicture(m.profilePicture || '')
-            // Merge saved photos into array
-            const savedPhotos = m.photos || []
-            const p = [...savedPhotos, '', '', '', '', '', ''].slice(0, 6)
-            setPhotos(p)
-            const savedVideos = m.videos || []
-            const v = [...savedVideos, '', '', ''].slice(0, 3)
-            setVideos(v)
-            const savedWebsites = m.websites || []
-            const w = [...savedWebsites, 
-              { label: '', url: '' }, { label: '', url: '' }, { label: '', url: '' },
-              { label: '', url: '' }, { label: '', url: '' }
-            ].slice(0, 5)
-            setWebsites(w)
-          }
-          setLoading(false)
-        })
-        .catch(() => setLoading(false))
+      fetch('/api/member/me').then(r => r.json()).then(data => {
+        if (data.member) {
+          const m = data.member
+          setMember(m)
+          setBio(m.bio || '')
+          setSkillsRaw(m.skillsRaw || '')
+          setProfilePicture(m.profilePicture || '')
+          const savedPhotos = m.photos || []
+          setPhotos([...savedPhotos, ...Array(6).fill('')].slice(0, 6))
+          const savedVideos = m.videos || []
+          setVideos([...savedVideos, ...Array(3).fill('')].slice(0, 3))
+          const savedWebsites = m.websites || []
+          setWebsites([...savedWebsites, ...Array(5).fill(null).map(() => ({ label: '', url: '' }))].slice(0, 5))
+        }
+        setLoading(false)
+      }).catch(() => setLoading(false))
     }
   }, [status, router])
 
   const updateWebsite = (idx: number, field: 'label' | 'url', val: string) => {
-    const w = [...websites]
-    w[idx] = { ...w[idx], [field]: val }
-    setWebsites(w)
-  }
-
-  const updatePhoto = (idx: number, val: string) => {
-    const p = [...photos]
-    p[idx] = val
-    setPhotos(p)
-  }
-
-  const updateVideo = (idx: number, val: string) => {
-    const v = [...videos]
-    v[idx] = val
-    setVideos(v)
+    const w = [...websites]; w[idx] = { ...w[idx], [field]: val }; setWebsites(w)
   }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSaving(true)
-    setError('')
-    setSuccess(false)
+    setSaving(true); setError(''); setSuccess(false)
     try {
       const res = await fetch('/api/member/update-profile', {
         method: 'POST',
@@ -99,14 +97,10 @@ export default function EditProfilePage() {
       setTimeout(() => router.push('/dashboard'), 1500)
     } catch (err: any) {
       setError(err.message)
-    } finally {
-      setSaving(false)
-    }
+    } finally { setSaving(false) }
   }
 
-  if (loading || status === 'loading') {
-    return <main className="min-h-screen flex items-center justify-center"><div className="text-brass font-serif text-xl">Loading...</div></main>
-  }
+  if (loading || status === 'loading') return <main className="min-h-screen flex items-center justify-center"><div className="text-brass font-serif text-xl">Loading...</div></main>
 
   const inputClass = "input-cmb w-full px-3 py-2 rounded-lg text-sm"
   const labelClass = "block text-brass-dim text-xs font-semibold mb-1 font-serif"
@@ -126,17 +120,15 @@ export default function EditProfilePage() {
           {/* Profile Photo */}
           <div className={sectionClass}>
             <h2 className="font-serif font-bold text-brass mb-4">📸 Profile Photo</h2>
-            <div className="flex items-center gap-4 mb-3">
-              <div className="w-20 h-20 rounded-full border-2 border-brass-cmb overflow-hidden flex-shrink-0">
-                {profilePicture
-                  ? <img src={profilePicture} className="w-full h-full object-cover" alt="Profile" />
-                  : <div className="w-full h-full bg-purple-dark flex items-center justify-center text-3xl">👤</div>}
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-24 rounded-2xl border-2 border-brass-cmb overflow-hidden flex-shrink-0">
+                {profilePicture ? <img src={profilePicture} className="w-full h-full object-cover" alt="Profile" />
+                  : <div className="w-full h-full bg-purple-dark flex items-center justify-center text-4xl">👤</div>}
               </div>
-              <div className="flex-1">
-                <label className={labelClass}>Profile Photo URL</label>
-                <input type="url" value={profilePicture} onChange={e => setProfilePicture(e.target.value)}
-                  className={inputClass} placeholder="https://your-photo-link.jpg" />
-                <p className="text-brass-dim/60 text-xs mt-1">Paste a direct link to your photo. Direct phone upload coming soon.</p>
+              <div>
+                <UploadButton onUploaded={setProfilePicture}>📷 Upload from Phone</UploadButton>
+                <p className="text-brass-dim/60 text-xs mt-2">Opens your camera or photo gallery</p>
+                {profilePicture && <p className="text-green-400 text-xs mt-1">✅ Photo uploaded</p>}
               </div>
             </div>
           </div>
@@ -167,10 +159,10 @@ export default function EditProfilePage() {
             <div className="space-y-3">
               {websites.map((w, i) => (
                 <div key={i} className="flex gap-2 items-end">
-                  <div className="w-32">
+                  <div className="w-28 flex-shrink-0">
                     {i === 0 && <label className={labelClass}>Label</label>}
                     <input type="text" value={w.label} onChange={e => updateWebsite(i, 'label', e.target.value)}
-                      className={inputClass} placeholder="e.g. GuardianPath DC" />
+                      className={inputClass} placeholder="e.g. My Business" />
                   </div>
                   <div className="flex-1">
                     {i === 0 && <label className={labelClass}>URL</label>}
@@ -185,17 +177,24 @@ export default function EditProfilePage() {
           {/* Photo Gallery */}
           <div className={sectionClass}>
             <h2 className="font-serif font-bold text-brass mb-2">🖼️ Photo Gallery (up to 6)</h2>
-            <p className="text-brass-dim/70 text-xs mb-4">Paste direct image URLs. Direct phone upload coming soon.</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {photos.map((p, i) => (
-                <div key={i}>
-                  {p && (
-                    <div className="w-full h-20 rounded-lg overflow-hidden mb-1">
-                      <img src={p} className="w-full h-full object-cover" alt="" onError={e => (e.currentTarget.style.display='none')} />
-                    </div>
-                  )}
-                  <input type="url" value={p} onChange={e => updatePhoto(i, e.target.value)}
-                    className={`${inputClass} text-xs`} placeholder={`Photo ${i+1} URL`} />
+                <div key={i} className="relative">
+                  <div className="aspect-square rounded-xl overflow-hidden border border-brass-cmb/30 bg-purple-dark/50 flex items-center justify-center">
+                    {p ? (
+                      <img src={p} className="w-full h-full object-cover" alt={`Photo ${i+1}`} />
+                    ) : (
+                      <span className="text-brass-dim/40 text-xs text-center px-2">Photo {i+1}</span>
+                    )}
+                  </div>
+                  <div className="mt-1">
+                    <UploadButton
+                      onUploaded={(url) => { const p2 = [...photos]; p2[i] = url; setPhotos(p2) }}
+                      className="w-full text-center py-1 text-xs rounded border border-brass-cmb/40 text-brass-dim hover:text-brass hover:border-brass-cmb transition-all"
+                    >
+                      {p ? '🔄 Replace' : '+ Add Photo'}
+                    </UploadButton>
+                  </div>
                 </div>
               ))}
             </div>
@@ -208,23 +207,18 @@ export default function EditProfilePage() {
             <div className="space-y-3">
               {videos.map((v, i) => (
                 <div key={i}>
-                  <label className={labelClass}>Video {i+1} URL</label>
-                  <input type="url" value={v} onChange={e => updateVideo(i, e.target.value)}
+                  <label className={labelClass}>Video {i+1}</label>
+                  <input type="url" value={v} onChange={e => { const v2 = [...videos]; v2[i] = e.target.value; setVideos(v2) }}
                     className={inputClass} placeholder="https://youtube.com/watch?v=..."/>
                 </div>
               ))}
             </div>
           </div>
 
-          {error && (
-            <div className="bg-red-900/20 border border-red-500/40 rounded-lg p-3 text-red-300 text-sm">{error}</div>
-          )}
-          {success && (
-            <div className="bg-green-900/20 border border-green-500/40 rounded-lg p-3 text-green-300 text-sm">✅ Profile saved! Redirecting...</div>
-          )}
+          {error && <div className="bg-red-900/20 border border-red-500/40 rounded-lg p-3 text-red-300 text-sm">{error}</div>}
+          {success && <div className="bg-green-900/20 border border-green-500/40 rounded-lg p-3 text-green-300 text-sm">✅ Profile saved! Redirecting...</div>}
 
-          <button type="submit" disabled={saving}
-            className="btn-brass w-full py-4 rounded-xl text-sm font-semibold font-serif">
+          <button type="submit" disabled={saving} className="btn-brass w-full py-4 rounded-xl text-sm font-semibold font-serif">
             {saving ? 'Saving Profile...' : '🛡️ Save Profile'}
           </button>
         </form>
