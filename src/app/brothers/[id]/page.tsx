@@ -114,7 +114,7 @@ export default function BrotherProfilePage() {
               {websites.map((w: any, i: number) => (
                 <a key={i} href={w.url} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-3 bg-purple-cmb/30 border border-brass-cmb/20 rounded-xl p-3 hover:border-brass-cmb/60 transition-all group">
-                  <img src={getFavicon(w.url)} alt="" className="w-6 h-6 rounded flex-shrink-0" onError={e => { (e.currentTarget as HTMLImageElement).style.display='none' }} />
+                  <img src={w.icon || getFavicon(w.url)} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" onError={e => { (e.currentTarget as HTMLImageElement).src = getFavicon(w.url) }} />
                   <div className="overflow-hidden">
                     <p className="text-brass text-sm font-semibold font-serif truncate group-hover:underline">{w.label || new URL(w.url).hostname}</p>
                     <p className="text-brass-dim/60 text-xs truncate">{w.url}</p>

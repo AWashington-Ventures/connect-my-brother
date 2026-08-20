@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose'
 export interface IWebsite {
   label: string
   url: string
+  icon?: string
 }
 
 export interface IMember extends Document {
@@ -37,6 +38,7 @@ export interface IMember extends Document {
 const WebsiteSchema = new Schema<IWebsite>({
   label: { type: String, required: true },
   url: { type: String, required: true },
+  icon: { type: String },
 }, { _id: false })
 
 const MemberSchema = new Schema<IMember>({

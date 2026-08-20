@@ -55,7 +55,7 @@ export default function EditProfilePage() {
   const [profilePicture, setProfilePicture] = useState('')
   const [photos, setPhotos] = useState<string[]>(Array(6).fill(''))
   const [videos, setVideos] = useState<string[]>(Array(3).fill(''))
-  const [websites, setWebsites] = useState<{label: string, url: string}[]>(Array(5).fill(null).map(() => ({ label: '', url: '' })))
+  const [websites, setWebsites] = useState<{label: string, url: string, icon?: string}[]>(Array(5).fill(null).map(() => ({ label: '', url: '', icon: '' })))
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
@@ -79,7 +79,7 @@ export default function EditProfilePage() {
     }
   }, [status, router])
 
-  const updateWebsite = (idx: number, field: 'label' | 'url', val: string) => {
+  const updateWebsite = (idx: number, field: 'label' | 'url' | 'icon', val: string) => {
     const w = [...websites]; w[idx] = { ...w[idx], [field]: val }; setWebsites(w)
   }
 
@@ -162,18 +162,34 @@ export default function EditProfilePage() {
           {/* Websites */}
           <div className={sectionClass}>
             <h2 className="font-serif font-bold text-brass mb-4">🌐 Websites & Links (up to 5)</h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {websites.map((w, i) => (
-                <div key={i} className="flex gap-2 items-end">
-                  <div className="w-28 flex-shrink-0">
-                    {i === 0 && <label className={labelClass}>Label</label>}
-                    <input type="text" value={w.label} onChange={e => updateWebsite(i, 'label', e.target.value)}
-                      className={inputClass} placeholder="e.g. My Business" />
+                <div key={i} className="border border-brass-cmb/20 rounded-xl p-3 bg-purple-dark/30">
+                  <div className="flex gap-2 items-center mb-2">
+                    {/* Icon preview + upload */}
+                    <div className="flex-shrink-0">
+                      {w.icon ? (
+                        <img src={w.icon} alt="" className="w-10 h-10 rounded-lg object-cover border border-brass-cmb/40" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg border border-brass-cmb/30 bg-purple-cmb/40 flex items-center justify-center text-brass-dim/40 text-xs">🌐</div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <input type="text" value={w.label} onChange={e => updateWebsite(i, 'label', e.target.value)}
+                        className={inputClass} placeholder="e.g. My Business" />
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    {i === 0 && <label className={labelClass}>URL</label>}
-                    <input type="url" value={w.url} onChange={e => updateWebsite(i, 'url', e.target.value)}
-                      className={inputClass} placeholder="https://yoursite.com" />
+                  <div className="flex gap-2 items-center">
+                    <div className="flex-1 min-w-0">
+                      <input type="url" value={w.url} onChange={e => updateWebsite(i, 'url', e.target.value)}
+                        className={inputClass} placeholder="https://yoursite.com" />
+                    </div>
+                    <UploadButton
+                      onUploaded={(url) => updateWebsite(i, 'icon', url)}
+                      className="flex-shrink-0 px-2 py-2 text-xs rounded border border-brass-cmb/40 text-brass-dim hover:text-brass hover:border-brass-cmb transition-all whitespace-nowrap"
+                    >
+                      📁 Upload Icon
+                    </UploadButton>
                   </div>
                 </div>
               ))}
