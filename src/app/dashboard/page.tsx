@@ -65,6 +65,16 @@ export default function DashboardPage() {
         </div>
 
         <div className="mb-4">
+          <Link href="/support" className="card-cmb rounded-2xl p-6 hover:border-brass-cmb/60 transition-all flex items-center gap-4 block">
+            <div className="text-3xl">🙋</div>
+            <div>
+              <h2 className="font-serif font-bold text-brass text-lg mb-1">Help & Support</h2>
+              <p className="text-brass-dim text-sm">Report an issue or ask a question</p>
+            </div>
+          </Link>
+        </div>
+
+        <div className="mb-4">
           <Link href="/account/profile" className="card-cmb rounded-2xl p-6 hover:border-brass-cmb/60 transition-all flex items-center gap-4 block">
             <div className="text-3xl">✏️</div>
             <div>
