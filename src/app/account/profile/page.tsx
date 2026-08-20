@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import { uploadToCloudinary } from '@/lib/cloudinary'
 
-function UploadButton({ onUploaded, children, className }: { onUploaded: (url: string) => void, children: React.ReactNode, className?: string }) {
+function UploadButton({ onUploaded, children, className, accept = 'image/*', resourceType = 'image' as 'image' | 'video' }: { 
+  onUploaded: (url: string) => void, 
+  children: React.ReactNode, 
+  className?: string,
+  accept?: string,
+  resourceType?: 'image' | 'video'
+}) {
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -14,7 +20,7 @@ function UploadButton({ onUploaded, children, className }: { onUploaded: (url: s
     if (!file) return
     setUploading(true)
     try {
-      const url = await uploadToCloudinary(file)
+      const url = await uploadToCloudinary(file, resourceType)
       onUploaded(url)
     } catch (err) {
       alert('Upload failed. Please try again.')
@@ -26,7 +32,7 @@ function UploadButton({ onUploaded, children, className }: { onUploaded: (url: s
 
   return (
     <>
-      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile}  />
+      <input ref={inputRef} type="file" accept={accept} className="hidden" onChange={handleFile} />
       <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading}
         className={className || 'btn-brass px-3 py-1.5 rounded-lg text-xs font-semibold'}>
         {uploading ? '⏳ Uploading...' : children}
@@ -203,13 +209,28 @@ export default function EditProfilePage() {
           {/* Videos */}
           <div className={sectionClass}>
             <h2 className="font-serif font-bold text-brass mb-2">🎥 Videos (up to 3)</h2>
-            <p className="text-brass-dim/70 text-xs mb-4">Paste YouTube or Vimeo links.</p>
-            <div className="space-y-3">
+            <div className="space-y-5">
               {videos.map((v, i) => (
-                <div key={i}>
+                <div key={i} className="border border-brass-cmb/20 rounded-xl p-4">
                   <label className={labelClass}>Video {i+1}</label>
-                  <input type="url" value={v} onChange={e => { const v2 = [...videos]; v2[i] = e.target.value; setVideos(v2) }}
-                    className={inputClass} placeholder="https://youtube.com/watch?v=..."/>
+                  <div className="flex flex-col gap-2">
+                    <UploadButton
+                      onUploaded={(url) => { const v2 = [...videos]; v2[i] = url; setVideos(v2) }}
+                      accept="video/*"
+                      resourceType="video"
+                      className="btn-brass px-3 py-2 rounded-lg text-xs font-semibold text-center"
+                    >
+                      📁 Upload from Computer/Phone
+                    </UploadButton>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-px bg-brass-cmb/20" />
+                      <span className="text-brass-dim/50 text-xs">OR</span>
+                      <div className="flex-1 h-px bg-brass-cmb/20" />
+                    </div>
+                    <input type="url" value={v} onChange={e => { const v2 = [...videos]; v2[i] = e.target.value; setVideos(v2) }}
+                      className={inputClass} placeholder="Paste YouTube / Vimeo link"/>
+                    {v && <p className="text-green-400 text-xs">✅ Video added</p>}
+                  </div>
                 </div>
               ))}
             </div>
