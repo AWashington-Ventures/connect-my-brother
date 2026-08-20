@@ -1,17 +1,24 @@
 'use client'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [member, setMember] = useState<any>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
+    }
+    if (status === 'authenticated') {
+      fetch('/api/member/me')
+        .then(r => r.json())
+        .then(data => { if (data.member) setMember(data.member) })
+        .catch(() => {})
     }
   }, [status, router])
 
@@ -22,6 +29,11 @@ export default function DashboardPage() {
       </main>
     )
   }
+
+  // Build lodge display: "Ionic Lodge #17" if number exists, else "Ionic Lodge"
+  const lodgeDisplay = member
+    ? `${member.lodgeName}${member.lodgeNumber ? ' #' + member.lodgeNumber : ''}`
+    : ''
 
   return (
     <main className="min-h-screen pt-20 pb-16 px-4">
@@ -34,10 +46,12 @@ export default function DashboardPage() {
           <h1 className="font-serif font-bold text-brass text-3xl mb-2">
             Welcome, Brother {session?.user?.name?.split(' ')[0]}
           </h1>
-          <p className="text-brass-dim">Ionic Lodge — Verified Master Mason</p>
+          <p className="text-brass-dim">
+            {lodgeDisplay ? `${lodgeDisplay} — Verified Master Mason` : 'Verified Master Mason'}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <Link href="/search" className="card-cmb rounded-2xl p-6 hover:border-brass-cmb/60 transition-all text-center block">
             <div className="text-3xl mb-3">🔍</div>
             <h2 className="font-serif font-bold text-brass text-lg mb-1">Search My Brothers</h2>
@@ -50,9 +64,31 @@ export default function DashboardPage() {
           </Link>
         </div>
 
+        <div className="mb-4">
+          <Link href="/account/profile" className="card-cmb rounded-2xl p-6 hover:border-brass-cmb/60 transition-all flex items-center gap-4 block">
+            <div className="text-3xl">✏️</div>
+            <div>
+              <h2 className="font-serif font-bold text-brass text-lg mb-1">Edit My Profile</h2>
+              <p className="text-brass-dim text-sm">Add bio, skills, and keywords for the directory</p>
+            </div>
+          </Link>
+        </div>
+
         <div className="card-cmb rounded-2xl p-6 mb-4">
           <h2 className="font-serif font-bold text-brass text-lg mb-3">My Account</h2>
           <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-brass-dim">Name</span>
+              <span className="text-brass">{member?.fullName || session?.user?.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-brass-dim">Lodge</span>
+              <span className="text-brass">{lodgeDisplay || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-brass-dim">Grand Lodge</span>
+              <span className="text-brass">{member?.grandLodge || '—'}</span>
+            </div>
             <div className="flex justify-between">
               <span className="text-brass-dim">Email</span>
               <span className="text-brass">{session?.user?.email}</span>

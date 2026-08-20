@@ -94,8 +94,8 @@ export default function DuesCardPage() {
                     <input className={inputClass} value={form.lodgeName} onChange={e => update('lodgeName', e.target.value)} placeholder="e.g. Ionic" required />
                   </div>
                   <div>
-                    <label className={labelClass}>Lodge No. *</label>
-                    <input className={inputClass} value={form.lodgeNumber} onChange={e => update('lodgeNumber', e.target.value)} placeholder="e.g. 17" required />
+                    <label className={labelClass}>Lodge No.</label>
+                    <input className={inputClass} value={form.lodgeNumber} onChange={e => update('lodgeNumber', e.target.value)} placeholder="e.g. 17" />
                   </div>
                 </div>
                 <div>
