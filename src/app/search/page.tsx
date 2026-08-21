@@ -1,5 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -16,10 +18,29 @@ interface Brother {
 }
 
 export default function SearchPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Brother[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status, router])
+
+  if (status === 'loading' || status === 'unauthenticated') {
+    return (
+      <main className="min-h-screen pt-20 pb-16 px-4 flex items-center justify-center">
+        <Navbar />
+        <div className="text-center">
+          <div className="text-brass font-serif text-xl">Verifying membership...</div>
+        </div>
+      </main>
+    )
+  }
 
   const search = async () => {
     if (!query.trim()) return
