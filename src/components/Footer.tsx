@@ -15,6 +15,9 @@ export default function Footer() {
           Membership requires valid dues card verification.<br />
           © {new Date().getFullYear()} Connect My Brother | A. Washington Ventures LLC
         </p>
+        <p className="text-brass-dim/40 text-xs mt-3 max-w-xl mx-auto leading-relaxed">
+          Connect My Brother is an independent service created by a Master Mason. It is not an official body or representative of the Most Worshipful Prince Hall Grand Lodge of the District of Columbia or any constituent lodge.
+        </p>
       </div>
     </footer>
   )
