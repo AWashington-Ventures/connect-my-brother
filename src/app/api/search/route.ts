@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
 import { connectDB } from '@/lib/mongodb'
 import Member from '@/models/Member'
 
 export async function GET(req: NextRequest) {
   try {
+    // Auth guard — verified members only
+    const session = await getServerSession()
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     await connectDB()
     const q = req.nextUrl.searchParams.get('q') || ''
     if (!q.trim()) return NextResponse.json({ members: [] })

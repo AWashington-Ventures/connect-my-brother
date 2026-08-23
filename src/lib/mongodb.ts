@@ -11,7 +11,15 @@ let cached = (global as any).mongoose || { conn: null, promise: null }
 export async function connectDB() {
   if (cached.conn) return cached.conn
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, { dbName: 'connectmybrother' }).then((m) => m)
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      dbName: 'connectmybrother',
+      // Security hardening: enforce TLS and strict connection timeouts
+      tls: true,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      bufferCommands: false,
+    }).then((m) => m)
   }
   cached.conn = await cached.promise
   return cached.conn
