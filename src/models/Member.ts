@@ -64,6 +64,8 @@ const MemberSchema = new Schema<IMember>({
   stripeCustomerId: String,
   stripeSubscriptionId: String,
   subscriptionStatus: { type: String, enum: ['active', 'inactive', 'pending'], default: 'pending' },
+  // Cross-platform field: supports future CMB/CMS shared directory, marketplace, and job board
+  platform: { type: String, enum: ['cmb', 'cms', 'both'], default: 'cmb' },
   memberNumber: Number,
   memberSince: { type: Date, default: Date.now },
 }, { timestamps: true })
