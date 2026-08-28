@@ -83,9 +83,15 @@ export default function NewListingPage() {
       return
     }
     setError('')
-    const newPreviews = files.map(f => URL.createObjectURL(f))
     setImageFiles(prev => [...prev, ...files])
-    setImagePreviews(prev => [...prev, ...newPreviews])
+    // Use FileReader for reliable cross-browser/mobile preview
+    files.forEach(file => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result as string])
+      }
+      reader.readAsDataURL(file)
+    })
   }
 
   const removeImage = (index: number) => {
