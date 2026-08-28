@@ -29,6 +29,18 @@ export interface IMember extends Document {
   stripeCustomerId?: string
   stripeSubscriptionId?: string
   subscriptionStatus: 'active' | 'inactive' | 'pending'
+  // Marketplace fields
+  marketplaceTier: 'basic' | 'marketplace'
+  marketplaceSubscriptionId?: string
+  businessLicenseUrl?: string
+  businessLicenseVerified: boolean
+  bbbCheckStatus: 'pending' | 'clear' | 'flagged' | 'not_found' | 'not_checked'
+  bbbCheckDate?: Date
+  sellerProfileName?: string
+  sellerDescription?: string
+  eventsTier: 'viewer' | 'poster'
+  eventsSubscriptionId?: string
+  platform: 'cmb' | 'cms' | 'both'
   memberNumber?: number
   memberSince: Date
   createdAt: Date
@@ -64,7 +76,19 @@ const MemberSchema = new Schema<IMember>({
   stripeCustomerId: String,
   stripeSubscriptionId: String,
   subscriptionStatus: { type: String, enum: ['active', 'inactive', 'pending'], default: 'pending' },
-  // Cross-platform field: supports future CMB/CMS shared directory, marketplace, and job board
+  // Marketplace tier: 'basic' = can browse/buy; 'marketplace' = can also sell ($2/month)
+  marketplaceTier: { type: String, enum: ['basic', 'marketplace'], default: 'basic' },
+  // Events tier: 'viewer' = can browse events (default); 'poster' = can post events ($1/month)
+  eventsTier: { type: String, enum: ['viewer', 'poster'], default: 'viewer' },
+  eventsSubscriptionId: String,
+  marketplaceSubscriptionId: String,
+  businessLicenseUrl: String,
+  businessLicenseVerified: { type: Boolean, default: false },
+  bbbCheckStatus: { type: String, enum: ['pending', 'clear', 'flagged', 'not_found', 'not_checked'], default: 'not_checked' },
+  bbbCheckDate: Date,
+  sellerProfileName: String,
+  sellerDescription: String,
+  // Cross-platform field: supports CMB/CMS shared directory, marketplace, and job board
   platform: { type: String, enum: ['cmb', 'cms', 'both'], default: 'cmb' },
   memberNumber: Number,
   memberSince: { type: Date, default: Date.now },

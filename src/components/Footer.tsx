@@ -18,6 +18,9 @@ export default function Footer() {
         <p className="text-brass-dim/40 text-xs mt-3 max-w-xl mx-auto leading-relaxed">
           Connect My Brother is an independent service created by a Master Mason. It is not an official body or representative of the Most Worshipful Prince Hall Grand Lodge of the District of Columbia or any constituent lodge.
         </p>
+        <p className="text-brass-dim/40 text-xs mt-3">
+          A. Washington Ventures LLC | Certified Business Enterprise (CBE) | DC Department of Small and Local Business Development (DSLBD)
+        </p>
       </div>
     </footer>
   )

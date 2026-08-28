@@ -19,6 +19,8 @@ export default function Navbar() {
           {session ? (
             <>
               <Link href="/search" className="text-brass-dim hover:text-brass transition-colors font-serif text-sm">Find a Brother</Link>
+              <Link href="/marketplace" className="text-brass-dim hover:text-brass transition-colors font-serif text-sm">Marketplace</Link>
+              <Link href="/events" className="text-brass-dim hover:text-brass transition-colors font-serif text-sm">Events</Link>
               <Link href="/dashboard" className="btn-brass px-4 py-2 rounded text-sm">My Dashboard</Link>
             </>
           ) : (
@@ -40,6 +42,8 @@ export default function Navbar() {
           {session ? (
             <>
               <Link href="/search" className="text-brass-dim font-serif" onClick={() => setOpen(false)}>Find a Brother</Link>
+              <Link href="/marketplace" className="text-brass-dim font-serif" onClick={() => setOpen(false)}>Marketplace</Link>
+              <Link href="/events" className="text-brass-dim font-serif" onClick={() => setOpen(false)}>Events</Link>
               <Link href="/dashboard" className="btn-brass px-4 py-2 rounded text-sm text-center" onClick={() => setOpen(false)}>My Dashboard</Link>
             </>
           ) : (
