@@ -5,6 +5,12 @@ import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 
+// Auto-convert Cloudinary URLs to browser-compatible format (fixes HEIC/HEIF)
+function cloudinaryAutoFormat(url: string): string {
+  if (!url || !url.includes('res.cloudinary.com')) return url
+  return url.replace('/image/upload/', '/image/upload/f_auto,q_auto/')
+}
+
 const CATEGORIES = [
   'All Categories',
   'Auto & Transportation',
@@ -157,12 +163,12 @@ export default function MarketplacePage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             {filtered.map((listing) => (
-              <div key={listing._id} className="card-cmb rounded-2xl overflow-hidden hover:border-brass-cmb/60 transition-all">
+              <Link key={listing._id} href={`/marketplace/${listing._id}`} className="card-cmb rounded-2xl overflow-hidden hover:border-brass-cmb/60 transition-all block cursor-pointer">
                 {/* Image */}
                 <div className="w-full h-40 bg-brass-cmb/10 flex items-center justify-center overflow-hidden">
                   {listing.images?.[0] ? (
                     <img
-                      src={listing.images[0]}
+                      src={cloudinaryAutoFormat(listing.images[0])}
                       alt={listing.title}
                       className="w-full h-full object-cover"
                     />
@@ -184,7 +190,7 @@ export default function MarketplacePage() {
                     <p className="text-brass-dim/60 text-xs mt-1">Condition: {listing.condition.replace('_', ' ')}</p>
                   )}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

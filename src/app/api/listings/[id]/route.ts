@@ -4,6 +4,19 @@ import { connectDB } from '@/lib/mongodb'
 import Listing from '@/models/Listing'
 import Member from '@/models/Member'
 
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    await connectDB()
+    const listing = await Listing.findById(params.id).lean()
+    if (!listing) return NextResponse.json({ error: 'Listing not found' }, { status: 404 })
+    return NextResponse.json({ listing })
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 })
+  }
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession()

@@ -5,6 +5,12 @@ import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 
+// Auto-convert Cloudinary HEIC/HEIF to browser-friendly format
+function cloudinaryAutoFormat(url: string): string {
+  if (!url || !url.includes('res.cloudinary.com')) return url
+  return url.replace('/image/upload/', '/image/upload/f_auto,q_auto/')
+}
+
 export default function SellerDashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -131,7 +137,7 @@ export default function SellerDashboardPage() {
                   {/* Image thumbnail */}
                   {listing.images?.[0] ? (
                     <img
-                      src={listing.images[0]}
+                      src={cloudinaryAutoFormat(listing.images[0])}
                       alt={listing.title}
                       className="w-20 h-20 object-cover rounded-xl flex-shrink-0"
                     />
