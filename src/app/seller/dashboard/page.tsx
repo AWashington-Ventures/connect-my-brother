@@ -96,6 +96,32 @@ export default function SellerDashboardPage() {
           </Link>
         </div>
 
+        {/* Payout Setup Banner */}
+        {member && !member.stripeConnectOnboarded && (
+          <div className="card-cmb rounded-xl p-4 mb-4 flex items-center justify-between gap-4 border border-amber-500/30">
+            <div>
+              <p className="text-brass text-sm font-semibold">🏦 Set up your payouts</p>
+              <p className="text-brass-dim text-xs">Connect your bank account to receive payments from sales.</p>
+            </div>
+            <Link href="/seller/payout-setup" className="btn-brass px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap flex-shrink-0">
+              Set Up →
+            </Link>
+          </div>
+        )}
+
+        {/* Business License Banner */}
+        {member && !member.businessLicenseUrl && (
+          <div className="card-cmb rounded-xl p-4 mb-4 flex items-center justify-between gap-4 border border-red-500/30">
+            <div>
+              <p className="text-brass text-sm font-semibold">📋 Upload your business license</p>
+              <p className="text-brass-dim text-xs">Required to activate your seller account and list items.</p>
+            </div>
+            <Link href="/seller/onboarding" className="btn-brass px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap flex-shrink-0">
+              Upload →
+            </Link>
+          </div>
+        )}
+
         {/* Stats bar */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="card-cmb rounded-xl p-3 text-center">

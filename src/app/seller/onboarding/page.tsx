@@ -51,7 +51,7 @@ function SellerOnboardingContent() {
     if (!licenseFile) { setError('Please upload your business license.'); return }
     if (!form.disclaimer) { setError('Please accept the disclaimer to continue.'); return }
     if (!form.businessName.trim()) { setError('Please enter your business name.'); return }
-    if (!sessionId) { setError('Missing payment session. Please try again or contact support.'); return }
+    // sessionId is optional for existing marketplace sellers re-uploading their license
 
     setError('')
     setStep('uploading')

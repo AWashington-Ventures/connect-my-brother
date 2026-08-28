@@ -15,9 +15,6 @@ export async function POST(req: NextRequest) {
 
     const { sessionId, businessName, businessDescription, businessLicenseUrl } = await req.json()
 
-    if (!sessionId) {
-      return NextResponse.json({ error: 'Missing payment session ID' }, { status: 400 })
-    }
     if (!businessName?.trim()) {
       return NextResponse.json({ error: 'Business name is required' }, { status: 400 })
     }
@@ -25,38 +22,49 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Business license upload is required' }, { status: 400 })
     }
 
-    // Verify Stripe payment
-    const stripeSession = await stripe.checkout.sessions.retrieve(sessionId)
-    if (stripeSession.payment_status !== 'paid' && stripeSession.status !== 'complete') {
-      return NextResponse.json({ error: 'Payment not confirmed' }, { status: 400 })
-    }
-
-    const memberId = stripeSession.metadata?.memberId
-    if (!memberId) {
-      return NextResponse.json({ error: 'Member ID missing from payment session' }, { status: 400 })
-    }
-
     await connectDB()
 
-    // Verify the session email matches the member
-    const member = await Member.findById(memberId)
+    const member = await Member.findOne({ email: session.user.email })
     if (!member) {
       return NextResponse.json({ error: 'Member not found' }, { status: 404 })
     }
-    if (member.email !== session.user.email) {
-      return NextResponse.json({ error: 'Session mismatch' }, { status: 403 })
+
+    let memberId = member._id.toString()
+    let subscriptionId = member.marketplaceSubscriptionId
+
+    if (sessionId) {
+      // New seller flow — verify Stripe payment
+      const stripeSession = await stripe.checkout.sessions.retrieve(sessionId)
+      if (stripeSession.payment_status !== 'paid' && stripeSession.status !== 'complete') {
+        return NextResponse.json({ error: 'Payment not confirmed' }, { status: 400 })
+      }
+      const stripeMetaMemberId = stripeSession.metadata?.memberId
+      if (!stripeMetaMemberId) {
+        return NextResponse.json({ error: 'Member ID missing from payment session' }, { status: 400 })
+      }
+      if (stripeMetaMemberId !== memberId) {
+        return NextResponse.json({ error: 'Session mismatch' }, { status: 403 })
+      }
+      subscriptionId = stripeSession.subscription as string
+    } else {
+      // Existing marketplace seller — re-uploading license
+      if (member.marketplaceTier !== 'marketplace') {
+        return NextResponse.json({ error: 'Marketplace Seller subscription required' }, { status: 403 })
+      }
     }
 
-    // Activate marketplace seller account
+    // Save seller profile & license
     await Member.findByIdAndUpdate(memberId, {
       marketplaceTier: 'marketplace',
-      marketplaceSubscriptionId: stripeSession.subscription as string,
+      ...(subscriptionId ? { marketplaceSubscriptionId: subscriptionId } : {}),
       businessLicenseUrl,
-      businessLicenseVerified: false, // pending admin review
+      businessLicenseVerified: false,
       bbbCheckStatus: 'pending',
       sellerProfileName: businessName.trim(),
       sellerDescription: businessDescription?.trim() || '',
     })
+
+    // Removed redundant second update block
 
     return NextResponse.json({ success: true })
   } catch (err: any) {

@@ -38,6 +38,8 @@ export interface IMember extends Document {
   bbbCheckDate?: Date
   sellerProfileName?: string
   sellerDescription?: string
+  stripeConnectAccountId?: string
+  stripeConnectOnboarded: boolean
   eventsTier: 'viewer' | 'poster'
   eventsSubscriptionId?: string
   platform: 'cmb' | 'cms' | 'both'
@@ -88,6 +90,8 @@ const MemberSchema = new Schema<IMember>({
   bbbCheckDate: Date,
   sellerProfileName: String,
   sellerDescription: String,
+  stripeConnectAccountId: String,
+  stripeConnectOnboarded: { type: Boolean, default: false },
   // Cross-platform field: supports CMB/CMS shared directory, marketplace, and job board
   platform: { type: String, enum: ['cmb', 'cms', 'both'], default: 'cmb' },
   memberNumber: Number,
