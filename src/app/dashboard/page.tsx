@@ -189,18 +189,18 @@ export default function DashboardPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-brass-dim">Membership</span>
-              <span className="text-green-400">Active — $5/month</span>
+              <span className="text-green-400">Active — $5/month ✅</span>
             </div>
             <div className="flex justify-between">
               <span className="text-brass-dim">Marketplace</span>
               <span className={isMarketplaceSeller ? 'text-green-400' : 'text-brass-dim'}>
-                {isMarketplaceSeller ? 'Seller — $2/month' : 'Basic (Browse & Buy)'}
+                {isMarketplaceSeller ? 'Seller — $2/month ✅' : 'Basic (Browse & Buy)'}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-brass-dim">Events</span>
               <span className={member?.eventsTier === 'poster' ? 'text-green-400' : 'text-brass-dim'}>
-                {member?.eventsTier === 'poster' ? 'Events Poster — $1/month' : 'Viewer (Browse Only)'}
+                {member?.eventsTier === 'poster' ? 'Events Poster — $1/month ✅' : 'Viewer (Browse Only)'}
               </span>
             </div>
             <div className="flex justify-between">
