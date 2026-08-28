@@ -18,6 +18,8 @@ export default function ListingDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeImg, setActiveImg] = useState(0)
   const [error, setError] = useState('')
+  const [buyLoading, setBuyLoading] = useState(false)
+  const [buyError, setBuyError] = useState('')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -129,12 +131,38 @@ export default function ListingDetailPage() {
           </div>
         </div>
 
-        {/* Buy button (placeholder — Stripe Connect coming soon) */}
+        {/* Buy button — Stripe Checkout */}
+        {buyError && (
+          <div className="bg-red-900/20 border border-red-500/40 rounded-lg p-3 mb-3 text-red-400 text-sm">
+            {buyError}
+          </div>
+        )}
         <button
-          className="w-full btn-brass py-4 rounded-2xl font-serif font-bold text-lg mb-4"
-          onClick={() => alert('Secure checkout coming soon! Contact the seller directly for now.')}
+          className="w-full btn-brass py-4 rounded-2xl font-serif font-bold text-lg mb-4 disabled:opacity-60 disabled:cursor-not-allowed"
+          disabled={buyLoading}
+          onClick={async () => {
+            setBuyLoading(true)
+            setBuyError('')
+            try {
+              const res = await fetch('/api/checkout/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId: params?.id }),
+              })
+              const data = await res.json()
+              if (data.url) {
+                window.location.href = data.url
+              } else {
+                setBuyError(data.error || 'Unable to start checkout. Please try again.')
+              }
+            } catch (e) {
+              setBuyError('Something went wrong. Please try again.')
+            } finally {
+              setBuyLoading(false)
+            }
+          }}
         >
-          Buy Now — ${listing.price?.toFixed(2)}
+          {buyLoading ? '⏳ Redirecting to checkout...' : `Buy Now — $${listing.price?.toFixed(2)}`}
         </button>
 
         {/* Disclaimer */}
