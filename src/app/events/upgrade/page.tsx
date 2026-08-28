@@ -38,9 +38,9 @@ export default function EventsUpgradePage() {
       <Navbar />
       <div className="max-w-lg mx-auto mt-8">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">📅</div>
+          <div className="mb-4"><img src="/cmb-logo.jpg" alt="" className="w-16 h-16 object-contain mx-auto" /></div>
           <h1 className="font-serif font-bold text-brass text-3xl mb-2">Events Poster Account</h1>
-          <p className="text-brass-dim">Post flyers, announcements, parties, weddings, and more to the entire CMB & CMS network.</p>
+          <p className="text-brass-dim">Post flyers, announcements, parties, weddings, and more to the entire Connect My Brother & Connect My Sister network.</p>
         </div>
 
         <div className="card-cmb rounded-2xl p-8 mb-6">
