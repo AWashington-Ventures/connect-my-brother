@@ -198,6 +198,12 @@ export default function DashboardPage() {
               </span>
             </div>
             <div className="flex justify-between">
+              <span className="text-brass-dim">Events</span>
+              <span className={member?.eventsTier === 'poster' ? 'text-green-400' : 'text-brass-dim'}>
+                {member?.eventsTier === 'poster' ? 'Events Poster — $1/month ✅' : 'Viewer (Browse Only)'}
+              </span>
+            </div>
+            <div className="flex justify-between">
               <span className="text-brass-dim">Status</span>
               <span className="text-brass">Verified Master Mason ✅</span>
             </div>
