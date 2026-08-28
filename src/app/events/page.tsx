@@ -66,10 +66,20 @@ export default function EventsPage() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null)
   const [calMonth, setCalMonth] = useState(new Date().getMonth())
   const [calYear, setCalYear] = useState(new Date().getFullYear())
+  const [memberProfile, setMemberProfile] = useState<any>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login')
   }, [status, router])
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetch('/api/member/me')
+        .then(r => r.json())
+        .then(d => { if (d.member) setMemberProfile(d.member) })
+        .catch(() => {})
+    }
+  }, [status])
 
   useEffect(() => {
     if (status !== 'authenticated') return
@@ -242,14 +252,16 @@ export default function EventsPage() {
           </div>
         )}
 
-        {/* Post CTA for viewer tier */}
-        <div className="mt-8 card-cmb rounded-xl p-4 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-brass text-sm font-semibold">Want to post events?</p>
-            <p className="text-brass-dim text-xs">$1/month — post flyers & announcements to the entire network</p>
+        {/* Post CTA — only show for viewer-tier members */}
+        {memberProfile?.eventsTier !== 'poster' && (
+          <div className="mt-8 card-cmb rounded-xl p-4 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-brass text-sm font-semibold">Want to post events?</p>
+              <p className="text-brass-dim text-xs">$1/month — post flyers & announcements to the entire network</p>
+            </div>
+            <Link href="/events/upgrade" className="btn-brass px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap">Upgrade →</Link>
           </div>
-          <Link href="/events/upgrade" className="btn-brass px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap">Upgrade →</Link>
-        </div>
+        )}
       </div>
     </main>
   )
