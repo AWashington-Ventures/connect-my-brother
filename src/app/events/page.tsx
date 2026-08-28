@@ -26,7 +26,7 @@ function EventModal({ event, onClose }: { event: any; onClose: () => void }) {
         )}
         {!event.flyer && (
           <div className="w-full h-40 bg-brass-cmb/10 flex items-center justify-center">
-            <span className="text-6xl">📅</span>
+            <img src="/cmb-logo.jpg" alt="" className="w-20 h-20 object-contain" />
           </div>
         )}
         <div className="p-6">
@@ -37,7 +37,7 @@ function EventModal({ event, onClose }: { event: any; onClose: () => void }) {
             </div>
             <button onClick={onClose} className="text-brass-dim hover:text-brass ml-4 text-xl">✕</button>
           </div>
-          <p className="text-brass text-sm mb-1">📅 {formatDate(date)} at {formatTime(date)}</p>
+          <p className="text-brass text-sm mb-1">🗓 {formatDate(date)} at {formatTime(date)}</p>
           <p className="text-brass-dim text-sm mb-3">📍 {event.location}</p>
           <p className="text-brass-dim text-sm mb-4 leading-relaxed">{event.description}</p>
           {event.tags?.length > 0 && (
@@ -124,7 +124,7 @@ export default function EventsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
-            <h1 className="font-serif font-bold text-brass text-3xl">📅 Events Board</h1>
+            <h1 className="font-serif font-bold text-brass text-3xl flex items-center gap-3"><img src="/cmb-logo.jpg" alt="" className="w-10 h-10 object-contain rounded-lg inline-block" /> Events Board</h1>
             <p className="text-brass-dim text-sm">Brotherhood & sisterhood events from across the network</p>
           </div>
           <div className="flex gap-2">
@@ -205,7 +205,7 @@ export default function EventsPage() {
           <div className="text-center py-16 text-brass-dim">Loading events...</div>
         ) : filteredEvents.length === 0 ? (
           <div className="card-cmb rounded-2xl p-12 text-center">
-            <div className="text-5xl mb-4">📅</div>
+            <div className="mb-4"><img src="/cmb-logo.jpg" alt="" className="w-16 h-16 object-contain mx-auto opacity-70" /></div>
             <h2 className="font-serif font-bold text-brass text-xl mb-2">
               {selectedDate ? 'No events on this day' : search ? 'No events found' : 'No events yet'}
             </h2>
@@ -228,7 +228,7 @@ export default function EventsPage() {
                   </div>
                 ) : (
                   <div className="aspect-[3/4] bg-brass-cmb/10 flex flex-col items-center justify-center gap-2">
-                    <span className="text-4xl">📅</span>
+                    <img src="/cmb-logo.jpg" alt="" className="w-12 h-12 object-contain opacity-80" />
                     <span className="text-brass text-xs font-semibold px-2 text-center">{event.category}</span>
                   </div>
                 )}

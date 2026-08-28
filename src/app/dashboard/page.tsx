@@ -102,7 +102,7 @@ export default function DashboardPage() {
         {member && member.eventsTier !== 'poster' && (
           <div className="mb-4 rounded-2xl border border-brass-cmb/40 bg-brass-cmb/5 p-5">
             <div className="flex items-start gap-4">
-              <div className="text-3xl">📅</div>
+              <img src="/cmb-logo.jpg" alt="" className="w-10 h-10 object-contain rounded-lg flex-shrink-0" />
               <div className="flex-1">
                 <h2 className="font-serif font-bold text-brass text-base mb-1">Share Events with the Network</h2>
                 <p className="text-brass-dim text-sm mb-3">Post flyers, lodge events, parties, weddings & announcements — visible to all Connect My Brother & Connect My Sister members.</p>
@@ -116,7 +116,7 @@ export default function DashboardPage() {
         {/* Events Poster Badge */}
         {member && member.eventsTier === 'poster' && (
           <div className="mb-4 rounded-2xl border border-brass-cmb/40 bg-brass-cmb/5 p-4 flex items-center gap-4">
-            <div className="text-3xl">📅</div>
+            <img src="/cmb-logo.jpg" alt="" className="w-10 h-10 object-contain rounded-lg flex-shrink-0" />
             <div className="flex-1">
               <p className="text-brass font-semibold text-sm">Events Poster Account Active</p>
               <p className="text-brass-dim text-xs">Post unlimited events to the CMB & CMS network.</p>
@@ -194,7 +194,7 @@ export default function DashboardPage() {
             <div className="flex justify-between">
               <span className="text-brass-dim">Marketplace</span>
               <span className={isMarketplaceSeller ? 'text-green-400' : 'text-brass-dim'}>
-                {isMarketplaceSeller ? 'Seller — $100/year ✅' : 'Basic (Browse & Buy)'}
+                {isMarketplaceSeller ? 'Seller — $2/month ✅' : 'Basic (Browse & Buy)'}
               </span>
             </div>
             <div className="flex justify-between">
