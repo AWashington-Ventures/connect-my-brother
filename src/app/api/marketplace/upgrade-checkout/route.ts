@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
         memberId: member._id.toString(),
         upgradeType: 'marketplace',
       },
-      success_url: `${appUrl}/marketplace/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}/seller/onboarding?session_id={CHECKOUT_SESSION_ID}`,  // → seller onboarding
       cancel_url: `${appUrl}/marketplace/upgrade`,
     })
 

@@ -105,7 +105,7 @@ export default function DashboardPage() {
               <div className="text-3xl">📅</div>
               <div className="flex-1">
                 <h2 className="font-serif font-bold text-brass text-base mb-1">Share Events with the Network</h2>
-                <p className="text-brass-dim text-sm mb-3">Post flyers, lodge events, parties, weddings & announcements — visible to all CMB & CMS members.</p>
+                <p className="text-brass-dim text-sm mb-3">Post flyers, lodge events, parties, weddings & announcements — visible to all Connect My Brother & Connect My Sister members.</p>
                 <Link href="/events/upgrade" className="inline-block btn-brass px-4 py-2 rounded-lg text-xs font-semibold">Post Events — $1/month →</Link>
               </div>
               <Link href="/events" className="text-brass text-xs underline whitespace-nowrap">Browse Events</Link>

@@ -53,7 +53,7 @@ export default function EventsUpgradePage() {
           <ul className="space-y-3 mb-8">
             {[
               'Post event flyers with photos and details',
-              'Visible to ALL CMB & CMS members',
+              'Visible to ALL Connect My Brother & Connect My Sister members',
               'Events appear in gallery and calendar view',
               'Weddings, parties, lodge events, announcements',
               'Searchable by keyword, date, and location',

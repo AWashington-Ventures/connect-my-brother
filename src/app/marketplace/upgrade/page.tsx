@@ -56,10 +56,10 @@ export default function MarketplaceUpgradePage() {
             {[
               'Create business listings with photos & descriptions',
               'Accept payments directly through the CMB platform',
-              'Visible to all verified CMB & CMS members',
+              'Visible to all verified Connect My Brother & Connect My Sister members',
               'Seller dashboard — track orders & revenue',
               'Verified Mason seller badge on your profile',
-              'No AWV transaction fees — flat annual rate',
+              'No AWV transaction fees — $2 monthly subscription only',
             ].map((feature) => (
               <li key={feature} className="flex items-start gap-3 text-brass text-sm">
                 <span className="text-green-400 mt-0.5">✓</span>
