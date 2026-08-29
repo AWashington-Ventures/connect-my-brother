@@ -22,7 +22,9 @@ function EventModal({ event, onClose }: { event: any; onClose: () => void }) {
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
       <div className="relative z-10 max-w-lg w-full card-cmb rounded-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
         {event.flyer && (
-          <img src={event.flyer} alt={event.title} className="w-full max-h-80 object-cover" />
+          <div className="w-full bg-black">
+            <img src={event.flyer} alt={event.title} className="w-full object-contain max-h-[70vh]" />
+          </div>
         )}
         {!event.flyer && (
           <div className="w-full h-40 bg-brass-cmb/10 flex items-center justify-center">
