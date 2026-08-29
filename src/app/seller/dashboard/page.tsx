@@ -224,6 +224,12 @@ export default function SellerDashboardPage() {
                       >
                         {listing.status === 'active' ? 'Pause' : 'Reactivate'}
                       </button>
+                      <Link
+                        href={`/seller/listings/${listing._id}/edit`}
+                        className="text-xs text-brass underline hover:text-brass-dim transition-colors"
+                      >
+                        Edit
+                      </Link>
                       <button
                         onClick={() => handleDelete(listing._id)}
                         disabled={deletingId === listing._id}

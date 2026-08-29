@@ -226,29 +226,42 @@ export default function EventsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {filteredEvents.map(event => (
-              <button
-                key={event._id}
-                onClick={() => setSelectedEvent(event)}
-                className="card-cmb rounded-xl overflow-hidden hover:border-brass-cmb/60 transition-all text-left group"
-              >
-                {event.flyer ? (
-                  <div className="aspect-[3/4] overflow-hidden">
-                    <img src={event.flyer} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  </div>
-                ) : (
-                  <div className="aspect-[3/4] bg-brass-cmb/10 flex flex-col items-center justify-center gap-2">
-                    <img src="/cmb-logo.jpg" alt="" className="w-12 h-12 object-contain opacity-80" />
-                    <span className="text-brass text-xs font-semibold px-2 text-center">{event.category}</span>
-                  </div>
-                )}
-                <div className="p-2">
-                  <p className="font-serif font-bold text-brass text-xs leading-tight line-clamp-2">{event.title}</p>
-                  <p className="text-brass-dim text-xs mt-1">{formatDate(new Date(event.date))}</p>
-                  <p className="text-brass-dim/60 text-xs truncate">📍 {event.location}</p>
+            {filteredEvents.map(event => {
+              const isMyEvent = memberProfile && event.postedBy && String(event.postedBy) === String(memberProfile._id)
+              return (
+                <div key={event._id} className="relative group">
+                  <button
+                    onClick={() => setSelectedEvent(event)}
+                    className="card-cmb rounded-xl overflow-hidden hover:border-brass-cmb/60 transition-all text-left w-full"
+                  >
+                    {event.flyer ? (
+                      <div className="aspect-[3/4] overflow-hidden">
+                        <img src={event.flyer} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                    ) : (
+                      <div className="aspect-[3/4] bg-brass-cmb/10 flex flex-col items-center justify-center gap-2">
+                        <img src="/cmb-logo.jpg" alt="" className="w-12 h-12 object-contain opacity-80" />
+                        <span className="text-brass text-xs font-semibold px-2 text-center">{event.category}</span>
+                      </div>
+                    )}
+                    <div className="p-2">
+                      <p className="font-serif font-bold text-brass text-xs leading-tight line-clamp-2">{event.title}</p>
+                      <p className="text-brass-dim text-xs mt-1">{formatDate(new Date(event.date))}</p>
+                      <p className="text-brass-dim/60 text-xs truncate">📍 {event.location}</p>
+                    </div>
+                  </button>
+                  {isMyEvent && (
+                    <Link
+                      href={`/events/${event._id}/edit`}
+                      className="absolute top-2 right-2 bg-black/70 text-brass text-xs px-2 py-0.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/90 z-10"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      ✏️ Edit
+                    </Link>
+                  )}
                 </div>
-              </button>
-            ))}
+              )
+            })}
           </div>
         )}
 
