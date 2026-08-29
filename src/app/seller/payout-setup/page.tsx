@@ -36,6 +36,8 @@ function PayoutSetupContent() {
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
+      } else if (data.error === 'pending_review') {
+        setError('pending_review')
       } else {
         setError(data.error || 'Unable to start payout setup. Please try again.')
       }
@@ -113,19 +115,31 @@ function PayoutSetupContent() {
             </p>
           </div>
 
-          {error && (
+          {error === 'pending_review' ? (
+            <div className="rounded-xl bg-amber-900/20 border border-amber-500/40 p-5 mb-4">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">⏳</span>
+                <div>
+                  <p className="text-amber-300 font-semibold text-sm mb-1">Payout Setup In Progress</p>
+                  <p className="text-amber-200/80 text-xs leading-relaxed">Your seller account is being finalized. Our team will contact you within 24 hours to complete your bank account connection. No action needed on your part.</p>
+                </div>
+              </div>
+            </div>
+          ) : error ? (
             <div className="bg-red-900/20 border border-red-500/40 rounded-lg p-3 mb-4 text-red-400 text-sm">
               {error}
             </div>
-          )}
+          ) : null}
 
-          <button
-            onClick={handleSetupPayouts}
-            disabled={loading}
-            className="w-full btn-brass py-3 rounded-xl font-serif font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? '⏳ Redirecting to Stripe...' : '🏦 Set Up Payouts →'}
-          </button>
+          {error !== 'pending_review' && (
+            <button
+              onClick={handleSetupPayouts}
+              disabled={loading}
+              className="w-full btn-brass py-3 rounded-xl font-serif font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? '⏳ Redirecting to Stripe...' : '🏦 Set Up Payouts →'}
+            </button>
+          )}
         </div>
       )}
 

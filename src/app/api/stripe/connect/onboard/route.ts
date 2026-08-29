@@ -61,6 +61,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: accountLink.url })
   } catch (err: any) {
     console.error('Stripe Connect onboard error:', err)
+    // Friendly message for platform profile not yet approved by Stripe
+    if (err.message && err.message.includes('platform profile')) {
+      return NextResponse.json({ 
+        error: 'pending_review',
+        message: 'Payout setup is currently being finalized. Our team will contact you within 24 hours to complete your bank account connection.'
+      }, { status: 503 })
+    }
     return NextResponse.json({ error: err.message || 'Payout setup failed' }, { status: 500 })
   }
 }
