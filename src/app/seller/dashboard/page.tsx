@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
+import BBBStatusBadge from '@/components/BBBStatusBadge'
 
 // Auto-convert Cloudinary HEIC/HEIF to browser-friendly format
 function cloudinaryAutoFormat(url: string): string {
@@ -121,6 +122,28 @@ export default function SellerDashboardPage() {
             </Link>
           </div>
         )}
+
+        {/* BBB Check Status Banner */}
+        <div className="card-cmb rounded-xl p-4 mb-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-brass text-sm font-semibold mb-1">BBB Standing Check</p>
+            <p className="text-brass-dim text-xs">
+              {member?.bbbCheckStatus === 'pending' && 'Your BBB check is in progress. This may take a few minutes.'}
+              {member?.bbbCheckStatus === 'clear' && 'Your business passed the BBB standing check.'}
+              {member?.bbbCheckStatus === 'flagged' && 'Your business was flagged in the BBB check. Please contact support.'}
+              {member?.bbbCheckStatus === 'not_found' && 'Your business was not found in the BBB directory. Listings remain active.'}
+              {member?.bbbCheckStatus === 'not_checked' && 'BBB check could not be completed. Listings remain active.'}
+            </p>
+            {member?.bbbCheckDate && (
+              <p className="text-brass-dim/50 text-xs mt-1">
+                Last checked: {new Date(member.bbbCheckDate).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+          <div className="flex-shrink-0">
+            <BBBStatusBadge status={member?.bbbCheckStatus || 'not_checked'} />
+          </div>
+        </div>
 
         {/* Stats bar */}
         <div className="grid grid-cols-3 gap-3 mb-6">

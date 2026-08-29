@@ -64,7 +64,20 @@ export async function POST(req: NextRequest) {
       sellerDescription: businessDescription?.trim() || '',
     })
 
-    // Removed redundant second update block
+    // Fire BBB check in background (non-blocking — don't await)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://connectmybrother.com'
+    fetch(`${appUrl}/api/seller/bbb-check`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Forward session cookie so auth works server-side
+        cookie: req.headers.get('cookie') || '',
+      },
+      body: JSON.stringify({
+        businessName: businessName.trim(),
+        location: member.cityState || 'Washington DC',
+      }),
+    }).catch(err => console.error('Background BBB check failed:', err.message))
 
     return NextResponse.json({ success: true })
   } catch (err: any) {

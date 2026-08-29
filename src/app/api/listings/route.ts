@@ -21,7 +21,23 @@ export async function GET(req: NextRequest) {
       ? { sellerId: member._id }
       : { status: 'active', platform: { $in: ['cmb', 'both'] } }
 
-    const listings = await Listing.find(query).sort({ createdAt: -1 }).limit(100).lean()
+    const rawListings = await Listing.find(query).sort({ createdAt: -1 }).limit(100).lean()
+
+    // For marketplace view (not mine), enrich listings with seller BBB status
+    let listings: any[] = rawListings
+    if (!mine && rawListings.length > 0) {
+      const sellerIds = [...new Set(rawListings.map((l: any) => l.sellerId?.toString()).filter(Boolean))]
+      const sellers = await Member.find(
+        { _id: { $in: sellerIds } },
+        { _id: 1, bbbCheckStatus: 1 }
+      ).lean()
+      const sellerMap = Object.fromEntries(sellers.map((s: any) => [s._id.toString(), s.bbbCheckStatus]))
+      listings = rawListings.map((l: any) => ({
+        ...l,
+        sellerBbbStatus: sellerMap[l.sellerId?.toString()] || 'not_checked',
+      }))
+    }
+
     return NextResponse.json({ listings })
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })

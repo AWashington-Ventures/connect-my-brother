@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
+import BBBStatusBadge from '@/components/BBBStatusBadge'
 
 // Auto-convert Cloudinary URLs to browser-compatible format (fixes HEIC/HEIF)
 function cloudinaryAutoFormat(url: string): string {
@@ -188,6 +189,11 @@ export default function MarketplacePage() {
                   </div>
                   {listing.condition && listing.condition !== 'service' && (
                     <p className="text-brass-dim/60 text-xs mt-1">Condition: {listing.condition.replace('_', ' ')}</p>
+                  )}
+                  {listing.sellerBbbStatus && listing.sellerBbbStatus !== 'not_checked' && (
+                    <div className="mt-2">
+                      <BBBStatusBadge status={listing.sellerBbbStatus} showLabel={true} />
+                    </div>
                   )}
                 </div>
               </Link>
