@@ -56,6 +56,8 @@ export default function EditProfilePage() {
   const [photos, setPhotos] = useState<string[]>(Array(6).fill(''))
   const [videos, setVideos] = useState<string[]>(Array(3).fill(''))
   const [websites, setWebsites] = useState<{label: string, url: string, icon?: string}[]>(Array(5).fill(null).map(() => ({ label: '', url: '', icon: '' })))
+  const [alertPrefs, setAlertPrefs] = useState({ newEvent: true, newMarketplaceListing: true, newJobListing: true })
+  const [alertSaving, setAlertSaving] = useState<string | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
@@ -76,11 +78,29 @@ export default function EditProfilePage() {
         }
         setLoading(false)
       }).catch(() => setLoading(false))
+      // Load alert preferences separately
+      fetch('/api/member/alert-preferences').then(r => r.json()).then(data => {
+        if (data.alertPreferences) setAlertPrefs(data.alertPreferences)
+      }).catch(() => {})
     }
   }, [status, router])
 
   const updateWebsite = (idx: number, field: 'label' | 'url' | 'icon', val: string) => {
     const w = [...websites]; w[idx] = { ...w[idx], [field]: val }; setWebsites(w)
+  }
+
+  const toggleAlert = async (key: keyof typeof alertPrefs) => {
+    const newVal = !alertPrefs[key]
+    setAlertPrefs(prev => ({ ...prev, [key]: newVal }))
+    setAlertSaving(key)
+    try {
+      await fetch('/api/member/alert-preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [key]: newVal }),
+      })
+    } catch {}
+    setTimeout(() => setAlertSaving(null), 800)
   }
 
   const handleSave = async (e: React.FormEvent) => {
@@ -247,6 +267,38 @@ export default function EditProfilePage() {
                       className={inputClass} placeholder="Paste YouTube / Vimeo link"/>
                     {v && <p className="text-green-400 text-xs">✅ Video added</p>}
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Alert Preferences */}
+          <div className={sectionClass}>
+            <h2 className="font-serif font-bold text-brass mb-1">🔔 Alert Preferences</h2>
+            <p className="text-brass-dim/60 text-xs mb-4">Choose which email alerts you'd like to receive. Changes save automatically.</p>
+            <div className="space-y-3">
+              {([
+                { key: 'newEvent' as const, label: '📅 New Event Posted', desc: 'Get notified when a brother posts a new event' },
+                { key: 'newMarketplaceListing' as const, label: '🛍 New Marketplace Listing', desc: 'Get notified when a new item is listed for sale' },
+                { key: 'newJobListing' as const, label: '💼 New Job Listing', desc: 'Get notified when a new job opportunity is posted' },
+              ]).map(({ key, label, desc }) => (
+                <div key={key} className="flex items-center justify-between p-3 rounded-xl border border-brass-cmb/20 bg-purple-dark/30">
+                  <div className="flex-1 min-w-0 pr-4">
+                    <p className="text-brass text-sm font-semibold font-serif">{label}</p>
+                    <p className="text-brass-dim/60 text-xs mt-0.5">{desc}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleAlert(key)}
+                    className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
+                      alertPrefs[key] ? 'bg-brass-cmb' : 'bg-purple-dark border border-brass-cmb/30'
+                    }`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform duration-200 ${
+                      alertPrefs[key] ? 'translate-x-6 bg-purple-dark' : 'translate-x-0 bg-brass-dim/40'
+                    }`} />
+                    {alertSaving === key && <span className="absolute -top-5 right-0 text-xs text-brass-dim">✓</span>}
+                  </button>
                 </div>
               ))}
             </div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { connectDB } from '@/lib/mongodb'
 import Member from '@/models/Member'
+import { sendAdminSubscriptionAlert } from '@/lib/resend'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
@@ -35,6 +36,16 @@ export async function POST(req: NextRequest) {
     if (!member) {
       return NextResponse.json({ error: 'Member not found' }, { status: 404 })
     }
+
+    // Notify admin of events poster subscription (non-blocking)
+    sendAdminSubscriptionAlert({
+      platform: 'cmb',
+      subscriptionType: 'events_poster',
+      memberName: member.fullName,
+      memberEmail: member.email,
+      lodgeName: member.lodgeName ? `${member.lodgeName}${member.lodgeNumber ? ' #' + member.lodgeNumber : ''}` : undefined,
+      amount: '$1.00/month',
+    }).catch(() => {})
 
     return NextResponse.json({ success: true, eventsTier: member.eventsTier })
   } catch (err: any) {

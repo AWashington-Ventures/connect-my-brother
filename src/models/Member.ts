@@ -47,6 +47,11 @@ export interface IMember extends Document {
   memberSince: Date
   createdAt: Date
   updatedAt: Date
+  alertPreferences: {
+    newEvent: boolean
+    newMarketplaceListing: boolean
+    newJobListing: boolean
+  }
 }
 
 const WebsiteSchema = new Schema<IWebsite>({
@@ -96,6 +101,11 @@ const MemberSchema = new Schema<IMember>({
   platform: { type: String, enum: ['cmb', 'cms', 'both'], default: 'cmb' },
   memberNumber: Number,
   memberSince: { type: Date, default: Date.now },
+  alertPreferences: {
+    newEvent: { type: Boolean, default: true },
+    newMarketplaceListing: { type: Boolean, default: true },
+    newJobListing: { type: Boolean, default: true },
+  },
 }, { timestamps: true })
 
 MemberSchema.index({ skills: 'text', lodgeName: 'text', fullName: 'text', cityState: 'text' })

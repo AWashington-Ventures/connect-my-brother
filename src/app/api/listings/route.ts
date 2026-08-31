@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { connectDB } from '@/lib/mongodb'
 import Listing from '@/models/Listing'
 import Member from '@/models/Member'
+import { sendBulkAlerts } from '@/lib/resend'
 
 export async function GET(req: NextRequest) {
   try {
@@ -73,6 +74,23 @@ export async function POST(req: NextRequest) {
       category, images: images || [], condition: condition || 'good',
       location, platform: 'both', status: 'active',
     })
+
+    // Fire alert emails to members who have newMarketplaceListing alerts enabled (non-blocking)
+    Member.find(
+      { subscriptionStatus: 'active', 'alertPreferences.newMarketplaceListing': true, _id: { $ne: member._id } },
+      { email: 1, fullName: 1 }
+    ).lean().then((subscribers: any[]) => {
+      if (subscribers.length > 0) {
+        sendBulkAlerts({
+          members: subscribers,
+          alertType: 'newMarketplaceListing',
+          itemTitle: listing.title,
+          itemDescription: listing.description,
+          itemUrl: `https://connectmybrother.com/marketplace/${listing._id}`,
+          platform: 'cmb',
+        }).catch(() => {}) // silent fail — never block listing creation
+      }
+    }).catch(() => {})
 
     return NextResponse.json({ listing }, { status: 201 })
   } catch (err: any) {

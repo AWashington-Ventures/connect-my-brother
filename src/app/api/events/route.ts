@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { connectDB } from '@/lib/mongodb'
 import Event from '@/models/Event'
 import Member from '@/models/Member'
+import { sendBulkAlerts } from '@/lib/resend'
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,6 +18,15 @@ export async function GET(req: NextRequest) {
 
     // Filter by platform (default: show cmb + both)
     query.platform = { $in: ['cmb', 'both'] }
+
+    // Auto-hide expired events: remove the day after end date
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+    query.$or = [
+      { endDate: { $gte: startOfToday } },
+      { endDate: { $exists: false }, date: { $gte: startOfToday } },
+      { endDate: null, date: { $gte: startOfToday } },
+    ]
 
     // Text search
     const search = searchParams.get('search')
@@ -98,6 +108,23 @@ export async function POST(req: NextRequest) {
       postedByLodge: `${member.lodgeName}${member.lodgeNumber ? ' #' + member.lodgeNumber : ''}`,
       approved: true,
     })
+
+    // Fire alert emails to members who have newEvent alerts enabled (non-blocking)
+    Member.find(
+      { subscriptionStatus: 'active', 'alertPreferences.newEvent': true, _id: { $ne: member._id } },
+      { email: 1, fullName: 1 }
+    ).lean().then((subscribers: any[]) => {
+      if (subscribers.length > 0) {
+        sendBulkAlerts({
+          members: subscribers,
+          alertType: 'newEvent',
+          itemTitle: event.title,
+          itemDescription: event.description,
+          itemUrl: `https://connectmybrother.com/events/${event._id}`,
+          platform: 'cmb',
+        }).catch(() => {}) // silent fail — never block event creation
+      }
+    }).catch(() => {})
 
     return NextResponse.json({ event }, { status: 201 })
   } catch (err: any) {

@@ -1,12 +1,15 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Navbar from '@/components/Navbar'
+import { Suspense } from 'react'
 
-export default function ProfilePage() {
+function ProfileContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [dues, setDues] = useState<any>(null)
   const [email, setEmail] = useState('')
+  const [sessionId, setSessionId] = useState('')
   const [form, setForm] = useState({
     bio: '', website: '', skillsRaw: '', profilePicture: ''
   })
@@ -17,10 +20,22 @@ export default function ProfilePage() {
   useEffect(() => {
     const d = sessionStorage.getItem('cmb_dues')
     const e = sessionStorage.getItem('cmb_email')
-    if (!d || !e) { router.push('/register/dues-card'); return }
+    const sid = searchParams.get('session_id')
+
+    // Require valid Stripe session_id — no payment bypass allowed
+    if (!sid) {
+      router.push('/register/subscribe')
+      return
+    }
+    if (!d || !e) {
+      router.push('/register/dues-card')
+      return
+    }
+
     setDues(JSON.parse(d))
     setEmail(e)
-  }, [router])
+    setSessionId(sid)
+  }, [router, searchParams])
 
   const update = (k: string, v: string) => setForm(f => ({...f, [k]: v}))
 
@@ -44,7 +59,7 @@ export default function ProfilePage() {
       const res = await fetch('/api/register/complete-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dues, email, ...form })
+        body: JSON.stringify({ dues, email, sessionId, ...form })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Profile save failed')
@@ -144,5 +159,13 @@ export default function ProfilePage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brass">Loading...</div>}>
+      <ProfileContent />
+    </Suspense>
   )
 }
