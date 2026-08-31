@@ -14,6 +14,7 @@ export interface IEvent extends Document {
   postedByName: string
   postedByLodge?: string
   approved: boolean
+  recurrence: 'none' | 'weekly' | 'monthly' | 'yearly'
   createdAt: Date
   updatedAt: Date
 }
@@ -32,6 +33,7 @@ const EventSchema = new Schema<IEvent>({
   postedByName: { type: String, required: true },
   postedByLodge: { type: String },
   approved: { type: Boolean, default: true }, // auto-approve for now
+  recurrence: { type: String, enum: ['none', 'weekly', 'monthly', 'yearly'], default: 'none' },
 }, { timestamps: true })
 
 // Full text search index

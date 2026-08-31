@@ -62,6 +62,7 @@ export default function EditEventPage() {
     location: '',
     category: 'General',
     tags: '',
+    recurrence: 'none',
   })
 
   useEffect(() => {
@@ -80,6 +81,7 @@ export default function EditEventPage() {
               location: ev.location || '',
               category: ev.category || 'General',
               tags: (ev.tags || []).join(', '),
+              recurrence: ev.recurrence || 'none',
             })
             setExistingFlyer(ev.flyer || '')
           } else {
@@ -204,6 +206,23 @@ export default function EditEventPage() {
                 <label className="block text-brass text-sm font-semibold mb-1">End Date</label>
                 <input type="datetime-local" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} className="w-full bg-purple-dark/60 border border-brass-cmb/30 rounded-lg px-3 py-2 text-brass text-sm focus:outline-none focus:border-brass-cmb" />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-brass text-sm font-semibold mb-1">Repeats</label>
+              <select
+                value={form.recurrence}
+                onChange={e => setForm(f => ({ ...f, recurrence: e.target.value }))}
+                className="w-full bg-purple-dark/60 border border-brass-cmb/30 rounded-lg px-3 py-2 text-brass text-sm focus:outline-none focus:border-brass-cmb"
+              >
+                <option value="none">Does not repeat</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+              {form.recurrence !== 'none' && (
+                <p className="text-brass-dim/70 text-xs mt-1">🔄 Recurring events stay on the board and auto-advance after each occurrence.</p>
+              )}
             </div>
 
             <div>

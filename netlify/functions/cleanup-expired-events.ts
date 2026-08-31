@@ -12,8 +12,10 @@ const cleanup = async () => {
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
 
-    // Delete events where endDate has passed, or (no endDate and start date has passed)
+    // Delete non-recurring events where endDate has passed, or (no endDate and start date has passed)
+    // Recurring events are NEVER deleted by cleanup — they auto-advance
     const result = await mongoose.connection.collection('events').deleteMany({
+      recurrence: { $in: [null, undefined, 'none'] },
       $or: [
         { endDate: { $lt: startOfToday } },
         { endDate: { $exists: false }, date: { $lt: startOfToday } },

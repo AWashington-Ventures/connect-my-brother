@@ -50,6 +50,7 @@ export default function PostEventPage() {
     flyer: '',
     tags: '',
     category: 'General',
+    recurrence: 'none',
   })
 
   useEffect(() => {
@@ -148,7 +149,7 @@ export default function PostEventPage() {
                 setSuccess(false)
                 setFlyerFile(null)
                 setFlyerPreview('')
-                setForm({ title: '', description: '', date: '', endDate: '', location: '', flyer: '', tags: '', category: 'General' })
+                setForm({ title: '', description: '', date: '', endDate: '', location: '', flyer: '', tags: '', category: 'General', recurrence: 'none' })
               }}
               className="block w-full py-3 rounded-xl border border-brass-cmb/40 text-brass font-serif text-sm hover:bg-brass-cmb/10 transition-all"
             >
@@ -215,6 +216,23 @@ export default function PostEventPage() {
                   className="w-full bg-purple-dark/60 border border-brass-cmb/30 rounded-lg px-3 py-2 text-brass text-sm focus:outline-none focus:border-brass-cmb"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-brass text-sm font-semibold mb-1">Repeats</label>
+              <select
+                value={form.recurrence}
+                onChange={e => setForm(f => ({ ...f, recurrence: e.target.value }))}
+                className="w-full bg-purple-dark/60 border border-brass-cmb/30 rounded-lg px-3 py-2 text-brass text-sm focus:outline-none focus:border-brass-cmb"
+              >
+                <option value="none">Does not repeat</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+              {form.recurrence !== 'none' && (
+                <p className="text-brass-dim/70 text-xs mt-1">🔄 Recurring events stay on the board and auto-advance after each occurrence.</p>
+              )}
             </div>
 
             <div>

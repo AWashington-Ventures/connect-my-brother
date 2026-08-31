@@ -38,7 +38,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const body = await req.json()
-    const allowed = ['title', 'description', 'date', 'endDate', 'location', 'flyer', 'tags', 'category']
+    const allowed = ['title', 'description', 'date', 'endDate', 'location', 'flyer', 'tags', 'category', 'recurrence']
     allowed.forEach(field => {
       if (body[field] !== undefined) {
         if (field === 'date' || field === 'endDate') {

@@ -20,9 +20,11 @@ export async function GET(req: NextRequest) {
     query.platform = { $in: ['cmb', 'both'] }
 
     // Auto-hide expired events: remove the day after end date
+    // Recurring events are exempt — they auto-advance and stay visible
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     query.$or = [
+      { recurrence: { $in: ['weekly', 'monthly', 'yearly'] } },
       { endDate: { $gte: startOfToday } },
       { endDate: { $exists: false }, date: { $gte: startOfToday } },
       { endDate: null, date: { $gte: startOfToday } },
@@ -87,7 +89,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { title, description, date, endDate, location, flyer, tags, category } = body
+    const { title, description, date, endDate, location, flyer, tags, category, recurrence } = body
 
     if (!title || !description || !date || !location) {
       return NextResponse.json({ error: 'Title, description, date, and location are required' }, { status: 400 })
@@ -102,6 +104,7 @@ export async function POST(req: NextRequest) {
       flyer,
       tags: tags || [],
       category: category || 'General',
+      recurrence: recurrence || 'none',
       platform: 'cmb',
       postedBy: member._id,
       postedByName: member.fullName,
