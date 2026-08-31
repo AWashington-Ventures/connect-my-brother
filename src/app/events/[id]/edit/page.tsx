@@ -127,6 +127,9 @@ export default function EditEventPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
+          // Convert datetime-local strings to UTC ISO strings to prevent timezone shifting
+          date: form.date ? new Date(form.date).toISOString() : undefined,
+          endDate: form.endDate ? new Date(form.endDate).toISOString() : undefined,
           flyer: flyerUrl,
           tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
         }),
