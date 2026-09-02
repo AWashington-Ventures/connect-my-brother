@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import TutorialButton from '@/components/TutorialButton'
+import FoundingMemberCountdown from '@/components/FoundingMemberCountdown'
 
 const features = [
   {
@@ -68,10 +69,8 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Founding Member Banner */}
-          <div className="inline-block mb-6 px-5 py-2 border border-brass-cmb bg-brass-cmb/15 rounded-full">
-            <p className="text-brass font-serif text-sm font-bold">🎉 Founding Member Access — FREE until January 1, 2027</p>
-          </div>
+          {/* Founding Member Countdown */}
+          <FoundingMemberCountdown />
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -150,10 +149,7 @@ export default function Home() {
         <div className="max-w-2xl mx-auto">
           <h2 className="font-serif font-bold text-3xl text-brass mb-4">Ready to Connect?</h2>
           <p className="text-gray-300 mb-8">Join Master Masons from across the nation on the only verified Masonic professional network.</p>
-          <div className="inline-block mb-4 px-5 py-2 border border-brass-cmb bg-brass-cmb/15 rounded-full">
-            <p className="text-brass font-serif text-sm font-bold">🎉 Founding Member Access — FREE until January 1, 2027</p>
-          </div>
-          <br />
+          <FoundingMemberCountdown />
           <Link href="/register/dues-card" className="btn-brass px-10 py-5 rounded-lg text-xl font-bold font-serif inline-block">
             Join Free — Founding Member Access
           </Link>
