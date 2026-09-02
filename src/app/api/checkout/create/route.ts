@@ -45,9 +45,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Seller not found' }, { status: 404 })
     }
 
+    // Seller must have completed Stripe Connect payout setup
+    if (!seller.stripeConnectAccountId || !seller.stripeConnectOnboarded) {
+      return NextResponse.json({
+        error: 'seller_no_payout',
+        message: 'This seller has not completed their payout setup yet. Please check back soon or contact the seller directly.',
+      }, { status: 400 })
+    }
+
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://connectmybrother.com'
     const amountCents = Math.round(listing.price * 100)
 
+    // Destination charge — 100% goes to seller via Stripe Connect
+    // Stripe processing fees (2.9% + $0.30) are deducted from the transfer automatically
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
@@ -65,6 +75,13 @@ export async function POST(req: NextRequest) {
         },
         quantity: 1,
       }],
+      payment_intent_data: {
+        // Route 100% of the payment to the seller's connected account
+        // Stripe deducts their processing fee from the transfer automatically
+        transfer_data: {
+          destination: seller.stripeConnectAccountId,
+        },
+      },
       metadata: {
         listingId: listing._id.toString(),
         buyerId: buyer._id.toString(),
