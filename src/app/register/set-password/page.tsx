@@ -19,8 +19,8 @@ function SetPasswordContent() {
     const urlEmail = searchParams.get('email')
     const storageEmail = sessionStorage.getItem('cmb_email')
     const resolvedEmail = urlEmail || storageEmail
-    if (!resolvedEmail) { router.push('/register/dues-card'); return }
-    setEmail(resolvedEmail)
+    if (resolvedEmail) setEmail(resolvedEmail)
+    // If no email found, show email input field instead of redirecting
   }, [router, searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,6 +69,19 @@ function SetPasswordContent() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {!email && (
+              <div>
+                <label className="block text-brass-dim text-xs font-semibold mb-1 font-serif">Email Address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="input-cmb w-full px-3 py-2 rounded-lg text-sm"
+                  placeholder="Enter your registered email"
+                  required
+                />
+              </div>
+            )}
             <div>
               <label className="block text-brass-dim text-xs font-semibold mb-1 font-serif">Password</label>
               <input

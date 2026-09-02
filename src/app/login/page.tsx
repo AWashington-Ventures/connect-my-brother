@@ -96,10 +96,14 @@ function LoginContent() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <p className="text-brass-dim text-xs">
               Not a member yet?{' '}
               <Link href="/register/dues-card" className="text-brass hover:underline">Subscribe Today</Link>
+            </p>
+            <p className="text-brass-dim text-xs">
+              Registered but never set a password?{' '}
+              <Link href="/register/set-password" className="text-brass hover:underline">Set Your Password</Link>
             </p>
           </div>
         </div>
