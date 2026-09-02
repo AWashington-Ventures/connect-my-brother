@@ -37,6 +37,10 @@ export default function DashboardPage() {
 
   const isMarketplaceSeller = member?.marketplaceTier === 'marketplace'
 
+  // Founding member warning: show if freeUntil is set and in the future
+  const freeUntilDate = member?.freeUntil ? new Date(member.freeUntil) : null
+  const showFoundingWarning = freeUntilDate && freeUntilDate > new Date() && !member?.stripeSubscriptionId
+
   return (
     <main className="min-h-screen pt-20 pb-16 px-4">
       <Navbar />
@@ -58,6 +62,24 @@ export default function DashboardPage() {
             {lodgeDisplay ? `${lodgeDisplay} — Verified Master Mason` : 'Verified Master Mason'}
           </p>
         </div>
+
+        {/* Founding Member Warning Banner — shown during free period */}
+        {showFoundingWarning && (
+          <div className="mb-4 rounded-2xl border-2 border-amber-500/60 bg-amber-900/15 p-5">
+            <div className="flex items-start gap-4">
+              <div className="text-3xl">⏳</div>
+              <div className="flex-1">
+                <h2 className="font-serif font-bold text-amber-400 text-base mb-1">Founding Member Free Access Ends January 1, 2027</h2>
+                <p className="text-amber-200/80 text-sm mb-3">
+                  You&apos;re enjoying free founding member access. On January 1, 2027, your account will require a $5/month subscription to stay active. Your profile and all data will be preserved.
+                </p>
+                <p className="text-amber-200/60 text-xs">
+                  No action needed now — you&apos;ll be prompted to add a payment method when the time comes.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Marketplace Prompt Card — shown to basic tier members only */}
         {member && !isMarketplaceSeller && (

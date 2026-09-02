@@ -29,6 +29,9 @@ const handler = NextAuth({
             email: member.email,
             name: member.fullName,
             image: member.profilePicture || null,
+            // Founding member fields for middleware enforcement
+            freeUntil: member.freeUntil ? member.freeUntil.toISOString() : null,
+            hasActiveSubscription: !!(member.stripeSubscriptionId),
           }
         } catch (e) {
           return null
@@ -42,12 +45,18 @@ const handler = NextAuth({
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id
+      if (user) {
+        token.id = user.id
+        token.freeUntil = (user as any).freeUntil ?? null
+        token.hasActiveSubscription = (user as any).hasActiveSubscription ?? false
+      }
       return token
     },
     async session({ session, token }) {
       if (token?.id && session.user) {
         (session.user as any).id = token.id as string
+        ;(session.user as any).freeUntil = token.freeUntil ?? null
+        ;(session.user as any).hasActiveSubscription = token.hasActiveSubscription ?? false
       }
       return session
     }

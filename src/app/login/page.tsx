@@ -1,12 +1,14 @@
 'use client'
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const reactivated = searchParams.get('reactivated') === '1'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -46,6 +48,13 @@ export default function LoginPage() {
             <h1 className="font-serif font-bold text-brass text-2xl mb-2">Member Login</h1>
             <p className="text-brass-dim text-sm">Active subscribers only</p>
           </div>
+
+          {/* Reactivation success banner */}
+          {reactivated && (
+            <div className="mb-5 rounded-xl border border-green-500/40 bg-green-900/15 p-4 text-center">
+              <p className="text-green-400 font-semibold text-sm">✅ Membership reactivated! Sign in to access your account.</p>
+            </div>
+          )}
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
