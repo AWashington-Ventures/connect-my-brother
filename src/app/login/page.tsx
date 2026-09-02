@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
+
+export const dynamic = 'force-dynamic'
 
 export default function LoginPage() {
   const router = useRouter()

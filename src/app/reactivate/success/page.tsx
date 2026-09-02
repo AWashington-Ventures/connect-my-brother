@@ -2,9 +2,10 @@
 import { useSession, signOut } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
+
+export const dynamic = 'force-dynamic'
 
 export default function ReactivateSuccessPage() {
   const { data: session } = useSession()
