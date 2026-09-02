@@ -32,6 +32,7 @@ const handler = NextAuth({
             // Founding member fields for middleware enforcement
             freeUntil: member.freeUntil ? member.freeUntil.toISOString() : null,
             hasActiveSubscription: !!(member.stripeSubscriptionId),
+            mustChangePassword: !!(member.mustChangePassword),
           }
         } catch (e) {
           return null
@@ -49,6 +50,7 @@ const handler = NextAuth({
         token.id = user.id
         token.freeUntil = (user as any).freeUntil ?? null
         token.hasActiveSubscription = (user as any).hasActiveSubscription ?? false
+        token.mustChangePassword = (user as any).mustChangePassword ?? false
       }
       return token
     },
@@ -57,6 +59,7 @@ const handler = NextAuth({
         (session.user as any).id = token.id as string
         ;(session.user as any).freeUntil = token.freeUntil ?? null
         ;(session.user as any).hasActiveSubscription = token.hasActiveSubscription ?? false
+        ;(session.user as any).mustChangePassword = token.mustChangePassword ?? false
       }
       return session
     }

@@ -46,6 +46,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
+  // Must change password — redirect to change-password page
+  if (token.mustChangePassword && !pathname.startsWith('/account/change-password')) {
+    const changePasswordUrl = new URL('/account/change-password', req.url)
+    return NextResponse.redirect(changePasswordUrl)
+  }
+
   const now = new Date()
   const freeUntil = token.freeUntil ? new Date(token.freeUntil as string) : null
   const hasActiveSubscription = token.hasActiveSubscription as boolean
