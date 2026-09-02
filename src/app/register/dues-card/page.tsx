@@ -28,6 +28,11 @@ export default function DuesCardPage() {
         body: JSON.stringify(form)
       })
       const data = await res.json()
+      // Redirect to dead-end wall page for unrecognized lodges
+      if (data.error === 'invalid_lodge') {
+        router.replace('/register/not-eligible')
+        return
+      }
       if (!res.ok) throw new Error(data.error || 'Verification failed')
       // Store dues card data and redirect to create account
       sessionStorage.setItem('cmb_dues', JSON.stringify(form))
