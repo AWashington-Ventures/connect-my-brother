@@ -64,7 +64,7 @@ function ProfileContent() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Profile save failed')
       sessionStorage.clear()
-      router.push('/register/set-password')
+      router.push('/register/success')
     } catch(err: any) {
       setError(err.message)
     } finally {
@@ -80,7 +80,7 @@ function ProfileContent() {
       <Navbar />
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-center gap-2 mb-8">
-          {['1. Verify Dues Card', '2. Subscribe', '3. Create Profile'].map((s, i) => (
+          {['1. Verify Dues Card', '2. Create Account', '3. Complete Profile'].map((s, i) => (
             <div key={s} className={`px-3 py-1 rounded text-xs font-serif ${
               i === 2 ? 'bg-brass-cmb text-purple-dark font-bold' : 'text-brass border border-brass-cmb/50'
             }`}>{s}</div>
