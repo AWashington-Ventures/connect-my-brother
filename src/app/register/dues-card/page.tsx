@@ -29,9 +29,9 @@ export default function DuesCardPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Verification failed')
-      // Store dues card data and redirect to payment
+      // Store dues card data and redirect to create account
       sessionStorage.setItem('cmb_dues', JSON.stringify(form))
-      router.push('/register/subscribe')
+      router.push('/register/create-account')
     } catch(err: any) {
       setError(err.message)
     } finally {
@@ -48,7 +48,7 @@ export default function DuesCardPage() {
       <div className="max-w-2xl mx-auto">
         {/* Steps */}
         <div className="flex justify-center gap-2 mb-8">
-          {['1. Verify Dues Card', '2. Subscribe', '3. Create Profile'].map((s, i) => (
+          {['1. Verify Dues Card', '2. Create Account', '3. Complete Profile'].map((s, i) => (
             <div key={s} className={`px-3 py-1 rounded text-xs font-serif ${
               i === 0 ? 'bg-brass-cmb text-purple-dark font-bold' : 'text-brass-dim border border-brass-cmb/30'
             }`}>{s}</div>
