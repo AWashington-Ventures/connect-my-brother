@@ -26,6 +26,8 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/#about" className="text-brass-dim hover:text-brass transition-colors font-serif text-sm">About</Link>
+              <Link href="/faq" className="text-brass-dim hover:text-brass transition-colors font-serif text-sm">FAQ</Link>
+              <Link href="/help" className="text-brass-dim hover:text-brass transition-colors font-serif text-sm">Help</Link>
               <Link href="/login" className="text-brass-dim hover:text-brass transition-colors font-serif text-sm">Login</Link>
               <Link href="/register/dues-card" className="btn-brass px-4 py-2 rounded text-sm">Subscribe Today</Link>
             </>
@@ -49,6 +51,8 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/#about" className="text-brass-dim font-serif" onClick={() => setOpen(false)}>About</Link>
+              <Link href="/faq" className="text-brass-dim font-serif" onClick={() => setOpen(false)}>FAQ</Link>
+              <Link href="/help" className="text-brass-dim font-serif" onClick={() => setOpen(false)}>Help</Link>
               <Link href="/login" className="text-brass-dim font-serif" onClick={() => setOpen(false)}>Login</Link>
               <Link href="/register/dues-card" className="btn-brass px-4 py-2 rounded text-sm text-center" onClick={() => setOpen(false)}>Subscribe Today</Link>
             </>
