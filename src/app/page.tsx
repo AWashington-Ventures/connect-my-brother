@@ -68,10 +68,15 @@ export default function Home() {
             </p>
           </div>
 
+          {/* Founding Member Banner */}
+          <div className="inline-block mb-6 px-5 py-2 border border-brass-cmb bg-brass-cmb/15 rounded-full">
+            <p className="text-brass font-serif text-sm font-bold">🎉 Founding Member Access — FREE until January 1, 2027</p>
+          </div>
+
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register/dues-card" className="btn-brass px-8 py-4 rounded-lg text-lg font-bold font-serif">
-              Subscribe Today — $5/month
+              Join Free — Founding Member Access
             </Link>
             <TutorialButton />
             <Link href="/login" className="px-8 py-4 rounded-lg text-lg font-bold font-serif border-2 border-brass-cmb/60 text-brass hover:bg-brass-cmb/10 transition-colors">
@@ -89,7 +94,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { step: '01', title: 'Verify Your Dues Card', desc: 'Submit your current Masonic dues card. Our system verifies you are an active Master Mason in good standing.' },
-              { step: '02', title: 'Subscribe & Build Profile', desc: 'Subscribe for $5/month. Create your profile — add your skills, photos, website, and what services you offer.' },
+              { step: '02', title: 'Join Free & Build Profile', desc: 'Join free as a Founding Member through December 31, 2026. Create your profile — add your skills, photos, website, and what services you offer.' },
               { step: '03', title: 'Connect With Brothers', desc: 'Search by keyword. Find brothers with the skills you need. Click Connect Now to send a private email introduction.' },
             ].map((item) => (
               <div key={item.step} className="card-cmb rounded-xl p-6 text-center transition-all">
@@ -145,10 +150,14 @@ export default function Home() {
         <div className="max-w-2xl mx-auto">
           <h2 className="font-serif font-bold text-3xl text-brass mb-4">Ready to Connect?</h2>
           <p className="text-gray-300 mb-8">Join Master Masons from across the nation on the only verified Masonic professional network.</p>
+          <div className="inline-block mb-4 px-5 py-2 border border-brass-cmb bg-brass-cmb/15 rounded-full">
+            <p className="text-brass font-serif text-sm font-bold">🎉 Founding Member Access — FREE until January 1, 2027</p>
+          </div>
+          <br />
           <Link href="/register/dues-card" className="btn-brass px-10 py-5 rounded-lg text-xl font-bold font-serif inline-block">
-            Subscribe Today — $5/month
+            Join Free — Founding Member Access
           </Link>
-          <p className="text-brass-dim/60 text-xs mt-4">Cancel anytime. Membership requires active dues card verification.</p>
+          <p className="text-brass-dim/60 text-xs mt-4">Free through December 31, 2026 — then $5/month. Membership requires active dues card verification.</p>
         </div>
       </section>
 
