@@ -1,13 +1,11 @@
 'use client'
+import { Suspense } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
-
 import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 
-export const dynamic = 'force-dynamic'
-
-export default function ReactivateSuccessPage() {
+function ReactivateSuccessContent() {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -42,8 +40,6 @@ export default function ReactivateSuccessPage() {
   }, [searchParams, router])
 
   const handleSignInAgain = async () => {
-    // Sign out to clear the stale JWT, then redirect to login
-    // The fresh login will generate a new JWT with hasActiveSubscription: true
     await signOut({ callbackUrl: '/login?reactivated=1' })
   }
 
@@ -116,5 +112,13 @@ export default function ReactivateSuccessPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function ReactivateSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <ReactivateSuccessContent />
+    </Suspense>
   )
 }

@@ -1,14 +1,12 @@
 'use client'
+import { Suspense } from 'react'
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
-
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const reactivated = searchParams.get('reactivated') === '1'
@@ -107,5 +105,13 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <LoginContent />
+    </Suspense>
   )
 }
