@@ -9,6 +9,7 @@ export default function EventsUpgradePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
 
   if (status === 'unauthenticated') {
     router.push('/login')
@@ -19,7 +20,11 @@ export default function EventsUpgradePage() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/events/upgrade-checkout', { method: 'POST' })
+      const res = await fetch('/api/events/upgrade-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ billingPeriod }),
+      })
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
@@ -40,13 +45,48 @@ export default function EventsUpgradePage() {
         <div className="text-center mb-8">
           <div className="mb-4"><img src="/cmb-logo.jpg" alt="" className="w-16 h-16 object-contain mx-auto" /></div>
           <h1 className="font-serif font-bold text-brass text-3xl mb-2">Events Poster Account</h1>
-          <p className="text-brass-dim">Post flyers, announcements, parties, weddings, and more to the entire Connect My Brother & Connect My Sister network.</p>
+          <p className="text-brass-dim">Post flyers, announcements, parties, weddings, and more to the entire Connect My Brother &amp; Connect My Sister network.</p>
         </div>
 
         <div className="card-cmb rounded-2xl p-8 mb-6">
+
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <button
+              onClick={() => setBillingPeriod('monthly')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                billingPeriod === 'monthly'
+                  ? 'bg-brass text-navy'
+                  : 'bg-transparent border border-brass-cmb/40 text-brass-dim'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod('annual')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                billingPeriod === 'annual'
+                  ? 'bg-brass text-navy'
+                  : 'bg-transparent border border-brass-cmb/40 text-brass-dim'
+              }`}
+            >
+              Annual <span className="text-green-400">Save 10%</span>
+            </button>
+          </div>
+
           <div className="text-center mb-6">
-            <span className="text-brass font-serif text-5xl font-bold">$1</span>
-            <span className="text-brass-dim text-lg">/month</span>
+            {billingPeriod === 'monthly' ? (
+              <>
+                <span className="text-brass font-serif text-5xl font-bold">$1</span>
+                <span className="text-brass-dim text-lg">/month</span>
+              </>
+            ) : (
+              <>
+                <span className="text-brass font-serif text-5xl font-bold">$11</span>
+                <span className="text-brass-dim text-lg">/year</span>
+                <p className="text-green-400 text-xs font-semibold mt-1">Save $1 vs monthly — 1 month free!</p>
+              </>
+            )}
             <p className="text-brass-dim text-sm mt-2">Funds support the lodge and fraternal community.</p>
           </div>
 
@@ -77,7 +117,12 @@ export default function EventsUpgradePage() {
             disabled={loading}
             className="w-full btn-brass py-3 rounded-xl font-serif font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Redirecting to Checkout...' : 'Become an Events Poster →'}
+            {loading
+              ? 'Redirecting to Checkout...'
+              : billingPeriod === 'annual'
+              ? 'Become an Events Poster — $11/year →'
+              : 'Become an Events Poster — $1/month →'
+            }
           </button>
         </div>
 

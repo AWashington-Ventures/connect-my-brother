@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Already an Events Poster' }, { status: 400 })
     }
 
+    const body = await req.json().catch(() => ({}))
+    const billingPeriod = body.billingPeriod === 'annual' ? 'annual' : 'monthly'
+    const isAnnual = billingPeriod === 'annual'
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://connectmybrother.com'
 
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -36,17 +39,20 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'CMB Events Poster',
-            description: 'Post event flyers, announcements, and more on the CMB & CMS Events Board. Visible to all members.',
+            name: isAnnual ? 'CMB Events Poster (Annual)' : 'CMB Events Poster',
+            description: isAnnual
+              ? 'Annual Events Poster access — save 10% vs monthly ($1/mo). Post on the CMB & CMS Events Board.'
+              : 'Post event flyers, announcements, and more on the CMB & CMS Events Board. Visible to all members.',
           },
-          unit_amount: 100, // $1.00
-          recurring: { interval: 'month' },
+          unit_amount: isAnnual ? 1100 : 100, // $11/year or $1.00/month
+          recurring: { interval: isAnnual ? 'year' : 'month' },
         },
         quantity: 1,
       }],
       metadata: {
         memberId: member._id.toString(),
         upgradeType: 'events_poster',
+        billingPeriod,
       },
       success_url: `${appUrl}/events/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/events/upgrade`,

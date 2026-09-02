@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 
 export default function MarketplaceUpgradePage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
 
   if (status === 'unauthenticated') {
     router.push('/login')
@@ -19,7 +20,11 @@ export default function MarketplaceUpgradePage() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/marketplace/upgrade-checkout', { method: 'POST' })
+      const res = await fetch('/api/marketplace/upgrade-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ billingPeriod }),
+      })
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
@@ -46,9 +51,44 @@ export default function MarketplaceUpgradePage() {
 
         {/* Pricing Card */}
         <div className="card-cmb rounded-2xl p-8 mb-6">
+
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <button
+              onClick={() => setBillingPeriod('monthly')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                billingPeriod === 'monthly'
+                  ? 'bg-brass text-navy'
+                  : 'bg-transparent border border-brass-cmb/40 text-brass-dim'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod('annual')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                billingPeriod === 'annual'
+                  ? 'bg-brass text-navy'
+                  : 'bg-transparent border border-brass-cmb/40 text-brass-dim'
+              }`}
+            >
+              Annual <span className="text-green-400">Save 10%</span>
+            </button>
+          </div>
+
           <div className="text-center mb-6">
-            <span className="text-brass font-serif text-5xl font-bold">$2</span>
-            <span className="text-brass-dim text-lg">/month</span>
+            {billingPeriod === 'monthly' ? (
+              <>
+                <span className="text-brass font-serif text-5xl font-bold">$2</span>
+                <span className="text-brass-dim text-lg">/month</span>
+              </>
+            ) : (
+              <>
+                <span className="text-brass font-serif text-5xl font-bold">$22</span>
+                <span className="text-brass-dim text-lg">/year</span>
+                <p className="text-green-400 text-xs font-semibold mt-1">Save $2 vs monthly — 1 month free!</p>
+              </>
+            )}
             <p className="text-brass-dim text-sm mt-2">No transaction fees from AWV. You keep your full sale proceeds minus Stripe processing. Funds support the lodge.</p>
           </div>
 
@@ -59,7 +99,7 @@ export default function MarketplaceUpgradePage() {
               'Visible to all verified Connect My Brother & Connect My Sister members',
               'Seller dashboard — track orders & revenue',
               'Verified Mason seller badge on your profile',
-              'No AWV transaction fees — $2 monthly subscription only',
+              'No AWV transaction fees — subscription only',
             ].map((feature) => (
               <li key={feature} className="flex items-start gap-3 text-brass text-sm">
                 <span className="text-green-400 mt-0.5">✓</span>
@@ -93,7 +133,12 @@ export default function MarketplaceUpgradePage() {
             disabled={loading}
             className="w-full btn-brass py-3 rounded-xl font-serif font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Redirecting to Checkout...' : 'Upgrade to Marketplace Seller →'}
+            {loading
+              ? 'Redirecting to Checkout...'
+              : billingPeriod === 'annual'
+              ? 'Upgrade to Marketplace Seller — $22/year →'
+              : 'Upgrade to Marketplace Seller — $2/month →'
+            }
           </button>
         </div>
 

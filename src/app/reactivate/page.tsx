@@ -3,13 +3,13 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
-import Link from 'next/link'
 
 export default function ReactivatePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -24,7 +24,7 @@ export default function ReactivatePage() {
       const res = await fetch('/api/reactivate/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: session?.user?.email }),
+        body: JSON.stringify({ email: session?.user?.email, billingPeriod }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Could not start checkout')
@@ -86,13 +86,46 @@ export default function ReactivatePage() {
             </ul>
           </div>
 
-          {/* Pricing */}
-          <div className="text-center mb-6">
-            <p className="text-brass font-serif font-bold text-3xl mb-1">
-              $5<span className="text-lg">/month</span>
-            </p>
-            <p className="text-brass-dim text-xs">50% supports Ionic Lodge No. 17</p>
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <button
+              onClick={() => setBillingPeriod('monthly')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                billingPeriod === 'monthly'
+                  ? 'bg-brass text-navy'
+                  : 'bg-transparent border border-brass-cmb/40 text-brass-dim'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod('annual')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                billingPeriod === 'annual'
+                  ? 'bg-brass text-navy'
+                  : 'bg-transparent border border-brass-cmb/40 text-brass-dim'
+              }`}
+            >
+              Annual <span className="text-green-400">Save 10%</span>
+            </button>
           </div>
+
+          {/* Pricing */}
+          <div className="text-center mb-2">
+            {billingPeriod === 'monthly' ? (
+              <p className="text-brass font-serif font-bold text-3xl mb-1">
+                $5<span className="text-lg">/month</span>
+              </p>
+            ) : (
+              <div>
+                <p className="text-brass font-serif font-bold text-3xl mb-1">
+                  $54<span className="text-lg">/year</span>
+                </p>
+                <p className="text-green-400 text-xs font-semibold">Save $6 vs monthly — 2 months free!</p>
+              </div>
+            )}
+          </div>
+          <p className="text-brass-dim text-xs mb-6">50% supports Ionic Lodge No. 17</p>
 
           {error && (
             <p className="text-red-400 text-sm bg-red-900/20 p-3 rounded-lg mb-4">{error}</p>
@@ -103,7 +136,12 @@ export default function ReactivatePage() {
             disabled={loading}
             className="btn-brass w-full py-4 rounded-lg text-lg font-bold font-serif disabled:opacity-50 mb-3"
           >
-            {loading ? 'Redirecting to payment...' : 'Reactivate Membership — $5/month →'}
+            {loading
+              ? 'Redirecting to payment...'
+              : billingPeriod === 'annual'
+              ? 'Reactivate Membership — $54/year →'
+              : 'Reactivate Membership — $5/month →'
+            }
           </button>
 
           <p className="text-brass-dim/60 text-xs">

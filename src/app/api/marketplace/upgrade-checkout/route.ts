@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Already a Marketplace Seller' }, { status: 400 })
     }
 
+    const body = await req.json().catch(() => ({}))
+    const billingPeriod = body.billingPeriod === 'annual' ? 'annual' : 'monthly'
+    const isAnnual = billingPeriod === 'annual'
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://connectmybrother.com'
 
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -36,19 +39,22 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'CMB Marketplace Seller',
-            description: 'List your business, goods, and services on the Connect My Brother Marketplace. Verified Mason sellers only.',
+            name: isAnnual ? 'CMB Marketplace Seller (Annual)' : 'CMB Marketplace Seller',
+            description: isAnnual
+              ? 'Annual Marketplace Seller access — save 10% vs monthly ($2/mo). Verified Mason sellers only.'
+              : 'List your business, goods, and services on the Connect My Brother Marketplace. Verified Mason sellers only.',
           },
-          unit_amount: 200, // $2.00
-          recurring: { interval: 'month' },
+          unit_amount: isAnnual ? 2200 : 200, // $22/year or $2.00/month
+          recurring: { interval: isAnnual ? 'year' : 'month' },
         },
         quantity: 1,
       }],
       metadata: {
         memberId: member._id.toString(),
         upgradeType: 'marketplace',
+        billingPeriod,
       },
-      success_url: `${appUrl}/seller/onboarding?session_id={CHECKOUT_SESSION_ID}`,  // → seller onboarding
+      success_url: `${appUrl}/seller/onboarding?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/marketplace/upgrade`,
     })
 
