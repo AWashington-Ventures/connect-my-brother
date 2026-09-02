@@ -22,7 +22,7 @@ function ProfileContent() {
     const e = sessionStorage.getItem('cmb_email')
     const sid = searchParams.get('session_id')
 
-    // Require valid Stripe session_id — no payment bypass allowed
+    // Require valid session_id (Stripe session or FREE_2027 founding member token)
     if (!sid) {
       router.push('/register/subscribe')
       return

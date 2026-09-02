@@ -3,10 +3,21 @@ import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
+// Free founding member period: all registrations are free until Jan 1, 2027
+const FREE_UNTIL = new Date('2027-01-01T00:00:00Z')
+
 export async function POST(req: NextRequest) {
   try {
     const { email, dues } = await req.json()
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://connectmybrother.com'
+
+    // FREE FOUNDING MEMBER PERIOD — bypass Stripe until Jan 1, 2027
+    if (new Date() < FREE_UNTIL) {
+      return NextResponse.json({
+        url: `${appUrl}/register/profile?session_id=FREE_2027`,
+        free: true,
+      })
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

@@ -6,6 +6,9 @@ import { sendAdminSubscriptionAlert } from '@/lib/resend'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
+// Free founding member period: all registrations are free until Jan 1, 2027
+const FREE_UNTIL = new Date('2027-01-01T00:00:00Z')
+
 function parseSkills(raw: string): string[] {
   return raw
     .split(/[,;:]+/)
@@ -20,7 +23,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { dues, email, sessionId, bio, website, skillsRaw, profilePicture } = body
 
-    // SECURITY: Require and verify Stripe session before creating any member
     if (!sessionId) {
       return NextResponse.json(
         { error: 'Payment verification required. Please complete checkout first.' },
@@ -28,7 +30,72 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Verify the Stripe checkout session
+    // FREE FOUNDING MEMBER PATH — valid only until Jan 1, 2027
+    if (sessionId === 'FREE_2027') {
+      if (new Date() >= FREE_UNTIL) {
+        return NextResponse.json(
+          { error: 'The free founding member period has ended. Please complete payment to register.' },
+          { status: 402 }
+        )
+      }
+
+      const verifiedEmail = (email || '').toLowerCase()
+      if (!verifiedEmail) {
+        return NextResponse.json({ error: 'Email is required.' }, { status: 400 })
+      }
+
+      const skills = parseSkills(skillsRaw || '')
+
+      // Handle page refresh (member already exists)
+      const existing = await Member.findOne({ email: verifiedEmail })
+      if (existing) {
+        existing.bio = bio
+        existing.website = website
+        existing.skills = skills
+        existing.skillsRaw = skillsRaw
+        if (profilePicture) existing.profilePicture = profilePicture
+        if (!existing.subscriptionStatus || existing.subscriptionStatus !== 'active') {
+          existing.subscriptionStatus = 'active'
+        }
+        existing.freeUntil = FREE_UNTIL
+        await existing.save()
+        return NextResponse.json({ success: true, memberId: existing._id })
+      }
+
+      const member = await Member.create({
+        email: verifiedEmail,
+        fullName: dues?.fullName || '',
+        lodgeName: dues?.lodgeName || '',
+        lodgeNumber: dues?.lodgeNumber || '',
+        grandLodge: dues?.grandLodge || '',
+        cityState: dues?.cityState || '',
+        cardIssuedDate: dues ? `${dues.issuedDate} 20${dues.issuedYear}` : '',
+        cardVoidDate: dues ? `${dues.voidDate} 20${dues.voidYear}` : '',
+        grandSecretary: dues?.grandSecretary || '',
+        duesCardVerified: true,
+        subscriptionStatus: 'active',
+        freeUntil: FREE_UNTIL,
+        bio,
+        website,
+        skills,
+        skillsRaw,
+        profilePicture: profilePicture || '',
+      })
+
+      // Notify admin of new founding member (non-blocking)
+      sendAdminSubscriptionAlert({
+        platform: 'cmb',
+        subscriptionType: 'new_member',
+        memberName: member.fullName,
+        memberEmail: verifiedEmail,
+        lodgeName: member.lodgeName ? `${member.lodgeName}${member.lodgeNumber ? ' #' + member.lodgeNumber : ''}` : undefined,
+        amount: 'FREE (Founding Member — until Jan 1, 2027)',
+      }).catch(() => {})
+
+      return NextResponse.json({ success: true, memberId: member._id })
+    }
+
+    // PAID PATH — Verify Stripe session
     let stripeSession
     try {
       stripeSession = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -41,7 +108,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Validate session payment status
     if (stripeSession.status !== 'complete') {
       return NextResponse.json(
         { error: 'Payment not completed. Please complete your subscription payment first.' },
@@ -56,7 +122,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Use the verified email from Stripe (prevents email manipulation)
     const verifiedEmail = (stripeSession.customer_email || email || '').toLowerCase()
     if (!verifiedEmail) {
       return NextResponse.json(
@@ -65,7 +130,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Extract Stripe IDs for account management
     const stripeCustomerId = typeof stripeSession.customer === 'string'
       ? stripeSession.customer
       : stripeSession.customer?.id || ''
@@ -76,10 +140,8 @@ export async function POST(req: NextRequest) {
 
     const skills = parseSkills(skillsRaw || '')
 
-    // Check if member already exists (handles page refresh after payment)
     const existing = await Member.findOne({ email: verifiedEmail })
     if (existing) {
-      // Update profile and ensure Stripe IDs are saved
       existing.bio = bio
       existing.website = website
       existing.skills = skills
@@ -92,7 +154,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, memberId: existing._id })
     }
 
-    // Create new member — only after Stripe payment is verified
     const member = await Member.create({
       email: verifiedEmail,
       fullName: dues?.fullName || '',
@@ -114,7 +175,6 @@ export async function POST(req: NextRequest) {
       profilePicture: profilePicture || '',
     })
 
-    // Notify admin of new paid subscription (non-blocking)
     sendAdminSubscriptionAlert({
       platform: 'cmb',
       subscriptionType: 'new_member',

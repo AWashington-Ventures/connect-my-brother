@@ -29,6 +29,7 @@ export interface IMember extends Document {
   stripeCustomerId?: string
   stripeSubscriptionId?: string
   subscriptionStatus: 'active' | 'inactive' | 'pending'
+  freeUntil?: Date
   // Marketplace fields
   marketplaceTier: 'basic' | 'marketplace'
   marketplaceSubscriptionId?: string
@@ -83,6 +84,7 @@ const MemberSchema = new Schema<IMember>({
   stripeCustomerId: String,
   stripeSubscriptionId: String,
   subscriptionStatus: { type: String, enum: ['active', 'inactive', 'pending'], default: 'pending' },
+  freeUntil: { type: Date },
   // Marketplace tier: 'basic' = can browse/buy; 'marketplace' = can also sell ($2/month)
   marketplaceTier: { type: String, enum: ['basic', 'marketplace'], default: 'basic' },
   // Events tier: 'viewer' = can browse events (default); 'poster' = can post events ($1/month)

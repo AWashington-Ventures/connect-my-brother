@@ -58,14 +58,16 @@ export default function SubscribePage() {
           </div>
 
           <div className="card-cmb rounded-xl p-5 mb-6 text-center border border-brass-cmb/30">
-            <p className="text-brass font-serif font-bold text-3xl mb-1">$5<span className="text-lg">/month</span></p>
-            <p className="text-brass-dim text-sm">Connect My Brother Membership</p>
+            <div className="inline-block bg-brass-cmb/20 border border-brass-cmb text-brass text-xs font-bold font-serif px-3 py-1 rounded-full mb-3">🎉 FOUNDING MEMBER — FREE ACCESS</div>
+            <p className="text-brass font-serif font-bold text-3xl mb-1">FREE<span className="text-lg"> until Jan 1, 2027</span></p>
+            <p className="text-brass-dim text-sm">Connect My Brother Founding Membership</p>
             <div className="divider-brass my-3" />
             <ul className="text-gray-300 text-sm space-y-1">
               <li>✅ Verified Masonic network access</li>
               <li>✅ Searchable skills directory</li>
               <li>✅ Unlimited brother connections</li>
               <li>✅ 50% supports Ionic Lodge No. 17</li>
+              <li>🔒 $5/month after January 1, 2027</li>
             </ul>
           </div>
 
@@ -84,9 +86,9 @@ export default function SubscribePage() {
             </div>
             {error && <p className="text-red-400 text-sm text-center bg-red-900/20 p-3 rounded-lg">{error}</p>}
             <button type="submit" disabled={loading} className="btn-brass w-full py-4 rounded-lg text-lg font-bold font-serif disabled:opacity-50">
-              {loading ? 'Setting up payment...' : 'Subscribe Now — $5/month →'}
+              {loading ? 'Activating your membership...' : 'Join Free — Activate Membership →'}
             </button>
-            <p className="text-brass-dim/60 text-xs text-center">Powered by Stripe. Secure payment. Cancel anytime.</p>
+            <p className="text-brass-dim/60 text-xs text-center">No payment required. Free founding member access through December 31, 2026.</p>
           </form>
         </div>
       </div>
