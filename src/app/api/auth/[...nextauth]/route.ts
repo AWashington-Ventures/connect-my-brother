@@ -28,7 +28,8 @@ const handler = NextAuth({
             id: member._id.toString(),
             email: member.email,
             name: member.fullName,
-            image: member.profilePicture || null,
+            // Never embed base64 images in JWT — only pass HTTP/HTTPS URLs to avoid cookie overflow
+            image: (member.profilePicture && typeof member.profilePicture === 'string' && member.profilePicture.startsWith('http')) ? member.profilePicture : null,
             // Founding member fields for middleware enforcement
             freeUntil: member.freeUntil ? member.freeUntil.toISOString() : null,
             hasActiveSubscription: !!(member.stripeSubscriptionId),
