@@ -6,7 +6,15 @@ import bcrypt from 'bcryptjs'
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
-    const { email, password } = await req.json()
+
+    let body: any
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    }
+
+    const { email, password } = body
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 })
@@ -22,10 +30,15 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12)
     member.passwordHash = passwordHash
+    // Clear mustChangePassword flag if set
+    if (member.mustChangePassword) {
+      member.mustChangePassword = false
+    }
     await member.save()
 
     return NextResponse.json({ success: true })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Failed to set password' }, { status: 500 })
+    console.error('set-password error:', err)
+    return NextResponse.json({ error: err?.message || 'Failed to set password' }, { status: 500 })
   }
 }
