@@ -310,6 +310,12 @@ export default function EditProfilePage() {
           <button type="submit" disabled={saving} className="btn-brass w-full py-4 rounded-xl text-sm font-semibold font-serif">
             {saving ? 'Saving Profile...' : '🛡️ Save Profile'}
           </button>
+
+          <div className="text-center pt-2">
+            <a href="/account/change-password" className="text-brass-dim text-sm underline hover:text-brass transition-colors">
+              🔑 Change Password
+            </a>
+          </div>
         </form>
       </div>
     </main>
